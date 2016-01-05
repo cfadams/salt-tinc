@@ -9,16 +9,18 @@ tinc_install:
     - name: tinc
     - refresh: True
     - pkgrepo: tinc_install
+{% for network,network_settings in tinc['networks'] %}
+{% if network_settings['node'][grains['id']] is defined or network_settings['master'][grains['id']] is defined %}
 tinc_network:
   file.directory:
-    - name: /etc/tinc/core/hosts
+    - name: /etc/tinc/{{ network }}/hosts
     - user: root
     - group: root
     - mode: 755
     - makedirs: True
 tinc_config:
   file.managed:
-    - name: /etc/tinc/core/tinc.conf
+    - name: /etc/tinc/{{ network }}/tinc.conf
     - source: salt://tinc/config/tinc/tinc.conf
     - user: root
     - group: root
@@ -26,22 +28,22 @@ tinc_config:
     - template: jinja
 tinc_{{ grains['id'] }}-privkey:
   file.managed:
-    - name: /etc/tinc/core/rsa_key.priv
-    - source: salt://secure/tinc/core/{{ grains['id'] }}/rsa_key.priv
+    - name: /etc/tinc/{{ network }}/rsa_key.priv
+    - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/rsa_key.priv
     - user: root
     - group: root
     - mode: 644
 tinc_{{ grains['id'] }}-pubkey:
   file.managed:
-    - name: /etc/tinc/core/rsa_key.pub
-    - source: salt://secure/tinc/core/{{ grains['id'] }}/rsa_key.pub
+    - name: /etc/tinc/{{ network }}/rsa_key.pub
+    - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/rsa_key.pub
     - user: root
     - group: root
     - mode: 644
 tinc_{{ grains['id'] }}-config:
   file.managed:
-    - name: /etc/tinc/core/hosts/{{ grains['id'] }}
-    - source: salt://secure/tinc/core/{{ grains['id'] }}/host
+    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id'] }}
+    - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/host
     - user: root
     - group: root
     - mode: 644
@@ -50,30 +52,48 @@ tinc_{{ grains['id'] }}-config:
       node: {{ grains['id'] }}
 tinc-up:
   file.managed:
-    - name: /etc/tinc/core/tinc-up
+    - name: /etc/tinc/{{ network }}/tinc-up
     - source: salt://tinc/config/tinc/tinc-up
     - user: root
     - group: root
     - mode: 755
     - template: jinja
     - context:
+      network: {{ network }}
       node: {{ grains['id'] }}
 tinc-down:
   file.managed:
-    - name: /etc/tinc/core/tinc-down
+    - name: /etc/tinc/{{ network }}/tinc-down
     - source: salt://tinc/config/tinc/tinc-down
     - user: root
     - group: root
     - mode: 755
-{% for core,core_setting in pillar['tinc']['core'] %}
+{% endif %}
+{% if tinc[network]['master'][grains['id']] is defined %}
+{% for node,node_setting in pillar['tinc'][network]['node'] %}
 tinc-core-{{ core }}:
   file.managed:
-    - name: /etc/tinc/core/hosts/{{ core }}
-    - source: salt://secure/tinc/core/{{ core }}/host
+    - name: /etc/tinc/{{ network }}/hosts/{{ node }}
+    - source: salt://secure/tinc/c{{ network }}/{{ node }}/host
     - user: root
     - group: root
     - mode: 644
     - template: jinja
     - context:
-      node: {{ core }}
+      node: {{ node }}
+{% endfor %}
+{% elif tinc[network]['node'][grains['id']] is defined %}
+{% for master,master_setting in pillar['tinc'][network]['master'] %}
+tinc-core-{{ core }}:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ master }}
+    - source: salt://secure/tinc/{{ network }}/{{ master }}/host
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - context:
+      node: {{ master }}
+{% endfor %}
+{% endif %}
 {% endfor %}

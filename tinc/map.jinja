@@ -13,28 +13,14 @@
 {% endif %}
 
 {# Merge in defaults to OS settings #}
-{% do defaults.ddosfilter.update(os_settings) %}
+{% do defaults.tinc.update(os_settings) %}
 
 {# Merge in pillar #}
-{% if pillar['ddosfilter'] is defined %}
-{% set ddosfilter_pillar = salt['pillar.get']('ddosfilter',default=defaults.ddosfilter,merge=True) %}
-
-{# Combine the common and minion specific pillars #}
-{% if pillar['ddosfilter']['frontend']['common'] is defined and pillar['ddosfilter']['frontend'][grains['id']] is defined %}
-{% set common_pillar = salt['pillar.get']('ddosfilter:frontend:'~grains['id'],default='ddosfilter:frontend:common',merge=True) %}
-{% do ddosfilter_pillar.update({'frontend':common_pillar}) %}
-{% elif pillar['ddosfilter']['frontend']['common'] is defined and pillar['ddosfilter']['frontend'][grains['id']] is not defined %}
-{% set common_pillar = salt['pillar.get']('',default='ddosfilter:frontend:common',merge=True) %}
-{% do ddosfilter_pillar.update({'frontend':common_pillar}) %}
-{% elif pillar['ddosfilter']['frontend']['common'] is not defined and pillar['ddosfilter']['frontend'][grains['id']] is defined %}
-{% set common_pillar = salt['pillar.get']('ddosfilter:frontend:'~grains['id'],merge=True) %}
-{% do ddosfilter_pillar.update({'frontend':common_pillar}) %}
+{% if pillar['tinc'] is defined %}
+{% set tinc_pillar = salt['pillar.get']('tinc',default=defaults.tinc,merge=True) %}
 {% else %}
-{% do ddosfilter_pillar.update({'frontend':{}}) %}
-{% endif %}
-{% else %}
-{% set ddosfilter_pillar = salt['pillar.get']('',default=defaults.ddosfilter,merge=True) %}
+{% set tinc_pillar = salt['pillar.get']('',default=defaults.tinc,merge=True) %}
 {% endif %}
 
 {# Create import pillar #}
-{% set ddosfilter = ddosfilter_pillar %}
+{% set tinc = tinc_pillar %}
