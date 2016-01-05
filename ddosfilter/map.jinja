@@ -1,0 +1,40 @@
+{% import_yaml "ddosfilter/osmap.yaml" as osmap %}
+{% import_yaml "ddosfilter/defaults.yaml" as defaults %}
+
+
+{# Map OS to OSName #}
+{% set os_distro = salt['grains.filter_by'](osmap,grain='os',default='Debian') %}
+
+{# Map Operating System version #}
+{% if grains['osmajorrelease'] is defined %}
+{% set os_settings = salt['grains.filter_by'](os_distro,grain='osmajorrelease',base='common') %}
+{% else %}
+{% set os_settings = salt['grains.filter_by'](os_distro,grain='oscodename',base='common') %}
+{% endif %}
+
+{# Merge in defaults to OS settings #}
+{% do defaults.ddosfilter.update(os_settings) %}
+
+{# Merge in pillar #}
+{% if pillar['ddosfilter'] is defined %}
+{% set ddosfilter_pillar = salt['pillar.get']('ddosfilter',default=defaults.ddosfilter,merge=True) %}
+
+{# Combine the common and minion specific pillars #}
+{% if pillar['ddosfilter']['frontend']['common'] is defined and pillar['ddosfilter']['frontend'][grains['id']] is defined %}
+{% set common_pillar = salt['pillar.get']('ddosfilter:frontend:'~grains['id'],default='ddosfilter:frontend:common',merge=True) %}
+{% do ddosfilter_pillar.update({'frontend':common_pillar}) %}
+{% elif pillar['ddosfilter']['frontend']['common'] is defined and pillar['ddosfilter']['frontend'][grains['id']] is not defined %}
+{% set common_pillar = salt['pillar.get']('',default='ddosfilter:frontend:common',merge=True) %}
+{% do ddosfilter_pillar.update({'frontend':common_pillar}) %}
+{% elif pillar['ddosfilter']['frontend']['common'] is not defined and pillar['ddosfilter']['frontend'][grains['id']] is defined %}
+{% set common_pillar = salt['pillar.get']('ddosfilter:frontend:'~grains['id'],merge=True) %}
+{% do ddosfilter_pillar.update({'frontend':common_pillar}) %}
+{% else %}
+{% do ddosfilter_pillar.update({'frontend':{}}) %}
+{% endif %}
+{% else %}
+{% set ddosfilter_pillar = salt['pillar.get']('',default=defaults.ddosfilter,merge=True) %}
+{% endif %}
+
+{# Create import pillar #}
+{% set ddosfilter = ddosfilter_pillar %}

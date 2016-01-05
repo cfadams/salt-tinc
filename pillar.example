@@ -1,0 +1,5 @@
+ddosfilter:
+  frontend:
+    salt-minion:
+      public-ip: 127.0.0.1
+  backend:

@@ -1,0 +1,7 @@
+ddosfilter:
+  varnish:
+    version: "4.0"
+    malloc: 256m
+  nginx: {}
+  frontend: {}
+  backend: {}
