@@ -16,7 +16,7 @@ tinc_network:
     - group: root
     - mode: 755
     - makedirs: True
-tinc-config:
+tinc_config:
   file.managed:
     - name: /etc/tinc/core/tinc.conf
     - source: salt://tinc/config/tinc/tinc.conf
@@ -24,21 +24,21 @@ tinc-config:
     - group: root
     - mode: 644
     - template: jinja
-tinc-{{ grains['id'] }}-privkey:
+tinc_{{ grains['id'] }}-privkey:
   file.managed:
     - name: /etc/tinc/core/rsa_key.priv
     - source: salt://secure/tinc/core/{{ grains['id'] }}/rsa_key.priv
     - user: root
     - group: root
     - mode: 644
-tinc-{{ grains['id'] }}-pubkey:
+tinc_{{ grains['id'] }}-pubkey:
   file.managed:
     - name: /etc/tinc/core/rsa_key.pub
     - source: salt://secure/tinc/core/{{ grains['id'] }}/rsa_key.pub
     - user: root
     - group: root
     - mode: 644
-tinc-{{ grains['id'] }}-config:
+tinc_{{ grains['id'] }}-config:
   file.managed:
     - name: /etc/tinc/core/hosts/{{ grains['id'] }}
     - source: salt://secure/tinc/core/{{ grains['id'] }}/host
@@ -48,6 +48,23 @@ tinc-{{ grains['id'] }}-config:
     - template: jinja
     - context:
       node: {{ grains['id'] }}
+tinc-up:
+  file.managed:
+    - name: /etc/tinc/core/tinc-up
+    - source: salt://tinc/config/tinc/tinc-up
+    - user: root
+    - group: root
+    - mode: 755
+    - template: jinja
+    - context:
+      node: {{ grains['id'] }}
+tinc-down:
+  file.managed:
+    - name: /etc/tinc/core/tinc-down
+    - source: salt://tinc/config/tinc/tinc-down
+    - user: root
+    - group: root
+    - mode: 755
 {% for core,core_setting in pillar['tinc']['core'] %}
 tinc-core-{{ core }}:
   file.managed:
