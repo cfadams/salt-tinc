@@ -1,3 +1,2 @@
 tinc:
-  core: {}
-  node: {}
+  network: {}

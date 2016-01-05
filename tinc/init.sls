@@ -9,8 +9,8 @@ tinc_install:
     - name: tinc
     - refresh: True
     - pkgrepo: tinc_install
-{% for network,network_settings in tinc['networks'] %}
-{% if network_settings['node'][grains['id']] is defined or network_settings['master'][grains['id']] is defined %}
+{% for network,network_setting in tinc['network'] %}
+{% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc_network:
   file.directory:
     - name: /etc/tinc/{{ network }}/hosts
@@ -26,6 +26,9 @@ tinc_config:
     - group: root
     - mode: 644
     - template: jinja
+    - context:
+      host: {{ grains['id'] }}
+      network: {{ network }}
 tinc_{{ grains['id'] }}-privkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.priv
@@ -69,12 +72,12 @@ tinc-down:
     - group: root
     - mode: 755
 {% endif %}
-{% if tinc[network]['master'][grains['id']] is defined %}
-{% for node,node_setting in pillar['tinc'][network]['node'] %}
+{% if tinc['network'][network]['master'][grains['id']] is defined %}
+{% for node,node_setting in tinc['network'][network]['node'] %}
 tinc-core-{{ core }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ node }}
-    - source: salt://secure/tinc/c{{ network }}/{{ node }}/host
+    - source: salt://secure/tinc/{{ network }}/{{ node }}/host
     - user: root
     - group: root
     - mode: 644
@@ -82,8 +85,8 @@ tinc-core-{{ core }}:
     - context:
       node: {{ node }}
 {% endfor %}
-{% elif tinc[network]['node'][grains['id']] is defined %}
-{% for master,master_setting in pillar['tinc'][network]['master'] %}
+{% elif tinc['network'][network]['node'][grains['id']] is defined %}
+{% for master,master_setting in tinc['network'][network]['master'] %}
 tinc-core-{{ core }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master }}

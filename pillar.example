@@ -1,5 +1,5 @@
 tinc:
-  networks:
+  network:
     ALinuxNinja-Servers:
       subnet: 10.5.0.0/16
       master:
