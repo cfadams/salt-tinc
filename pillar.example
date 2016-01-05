@@ -1,5 +1,8 @@
-ddosfilter:
-  frontend:
-    salt-minion:
+tinc:
+  core:
+    cr01.startledphoenixsrv:
       public-ip: 127.0.0.1
-  backend:
+    cr02.startledphoenixsrv:
+      public-ip: 127.0.0.1
+    cr03.startledphoenixsrv:
+      public-ip: 127.0.0.1
