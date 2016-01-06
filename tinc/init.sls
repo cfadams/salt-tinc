@@ -74,7 +74,7 @@ tinc-down:
 {% endif %}
 {% if tinc['network'][network]['master'][grains['id']] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
-tinc-core-{{ core }}:
+tinc-{{ network }}-{{ node }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ node }}
     - source: salt://secure/tinc/{{ network }}/{{ node }}/host
@@ -87,7 +87,7 @@ tinc-core-{{ core }}:
 {% endfor %}
 {% elif tinc['network'][network]['node'][grains['id']] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
-tinc-core-{{ core }}:
+tinc-{{ network }}-{{ master }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master }}
     - source: salt://secure/tinc/{{ network }}/{{ master }}/host
