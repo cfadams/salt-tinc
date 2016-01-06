@@ -75,7 +75,20 @@ tinc-down:
     - group: root
     - mode: 755
 {% endif %}
-{% if tinc['network'][network]['master'][grains['id']] is defined %}
+{% if network == "core" %}
+{% for master,master_setting in tinc['network'][network]['master']}
+tinc-{{ network }}-{{ master }}:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ master }}
+    - source: salt://secure/tinc/{{ network }}/{{ master }}/host
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - context:
+      node: {{ master }}
+{% endfor %}
+{% elif tinc['network'][network]['master'][grains['id']] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-{{ network }}-{{ node }}:
   file.managed:
