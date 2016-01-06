@@ -9,7 +9,7 @@ tinc_install:
     - name: tinc
     - refresh: True
     - pkgrepo: tinc_install
-{% for network,network_setting in tinc['network'] %}
+{% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc_network:
   file.directory:
