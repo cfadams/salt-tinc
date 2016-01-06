@@ -27,6 +27,7 @@ tinc_config:
     - mode: 644
     - template: jinja
     - context:
+      tinc: {{ tinc }}
       host: {{ grains['id'] }}
       network: {{ network }}
 tinc_{{ grains['id'] }}-privkey:
@@ -52,7 +53,8 @@ tinc_{{ grains['id'] }}-config:
     - mode: 644
     - template: jinja
     - context:
-      node: {{ grains['id'] }}
+      tinc: {{ tinc }}
+      host: {{ grains['id'] }}
 tinc-up:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc-up
@@ -62,6 +64,7 @@ tinc-up:
     - mode: 755
     - template: jinja
     - context:
+      tinc: {{ tinc }}
       network: {{ network }}
       node: {{ grains['id'] }}
 tinc-down:
