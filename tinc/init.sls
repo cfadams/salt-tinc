@@ -62,7 +62,6 @@ tinc-up:
     - mode: 755
     - template: jinja
     - context:
-      tinc: {{ tinc }}
       network: {{ network }}
       node: {{ grains['id'] }}
 tinc-down:

@@ -1,6 +1,6 @@
 #!/bin/sh
-ifconfig $INTERFACE {%- if tinc['network'][network]['master'][node] is defined -%}
-{{ tinc['network'][network]['master'][node]['local-ip'] }}
+ifconfig $INTERFACE {%- if pillar['tinc']['network'][network]['master'][node] is defined -%}
+{{ pillar['tinc']['network'][network]['master'][node]['local-ip'] }}
 {%- else -%}
-{{ tinc['network'][network]['node'][node]['local-ip'] }}
+{{ pillar['tinc']['network'][network]['node'][node]['local-ip'] }}
 {%- endif -%} netmask 255.255.0.0
