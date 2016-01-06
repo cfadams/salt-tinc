@@ -73,7 +73,7 @@ tinc-down:
     - mode: 755
 {% endif %}
 {% if tinc['network'][network]['master'][grains['id']] is defined %}
-{% for node,node_setting in tinc['network'][network]['node'] %}
+{% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-core-{{ core }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ node }}
@@ -86,7 +86,7 @@ tinc-core-{{ core }}:
       node: {{ node }}
 {% endfor %}
 {% elif tinc['network'][network]['node'][grains['id']] is defined %}
-{% for master,master_setting in tinc['network'][network]['master'] %}
+{% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
 tinc-core-{{ core }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master }}
