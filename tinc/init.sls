@@ -21,14 +21,14 @@ tinc_boot:
       tinc: {{ tinc }}
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
-tinc_network:
+tinc-{{ network }}_network:
   file.directory:
     - name: /etc/tinc/{{ network }}/hosts
     - user: root
     - group: root
     - mode: 755
     - makedirs: True
-tinc_config:
+tinc-{{ network }}_config:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc.conf
     - source: salt://tinc/config/tinc/tinc.conf
@@ -40,21 +40,21 @@ tinc_config:
       tinc: {{ tinc }}
       host: {{ grains['id'] }}
       network: {{ network }}
-tinc_{{ grains['id'] }}-privkey:
+tinc-{{ network }}_{{ grains['id'] }}-privkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.priv
     - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/rsa_key.priv
     - user: root
     - group: root
     - mode: 644
-tinc_{{ grains['id'] }}-pubkey:
+tinc-{{ network }}_{{ grains['id'] }}-pubkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.pub
     - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/rsa_key.pub
     - user: root
     - group: root
     - mode: 644
-tinc_{{ grains['id'] }}-config:
+tinc-{{ network }}_{{ grains['id'] }}-config:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ grains['id']|replace(".", "_") }}
     - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/host
@@ -66,7 +66,7 @@ tinc_{{ grains['id'] }}-config:
       tinc: {{ tinc }}
       host: {{ grains['id'] }}
       network: {{ network }}
-tinc-up:
+tinc-{{ network }}-up:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc-up
     - source: salt://tinc/config/tinc/tinc-up
@@ -78,7 +78,7 @@ tinc-up:
       tinc: {{ tinc }}
       network: {{ network }}
       node: {{ grains['id'] }}
-tinc-down:
+tinc-{{ network }}-down:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc-down
     - source: salt://tinc/config/tinc/tinc-down
