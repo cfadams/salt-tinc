@@ -65,6 +65,7 @@ tinc_{{ grains['id'] }}-config:
     - context:
       tinc: {{ tinc }}
       host: {{ grains['id'] }}
+      network: {{ network }}
 tinc-up:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc-up
@@ -109,7 +110,9 @@ tinc-{{ network }}-{{ node }}:
     - mode: 644
     - template: jinja
     - context:
-      node: {{ node }}
+      tinc: {{ tinc }}
+      host: {{ node }}
+      network: {{ network }}
 {% endfor %}
 {% elif tinc['network'][network]['node'][grains['id']] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
@@ -122,7 +125,9 @@ tinc-{{ network }}-{{ master }}:
     - mode: 644
     - template: jinja
     - context:
-      node: {{ master }}
+      tinc: {{ tinc }}
+      host: {{ master }}
+      network: {{ network }}
 {% endfor %}
 {% endif %}
 {% endfor %}
