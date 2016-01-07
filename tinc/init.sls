@@ -9,6 +9,16 @@ tinc_install:
     - name: tinc
     - refresh: True
     - pkgrepo: tinc_install
+tinc_boot:
+  file.managed:
+    - name: /etc/tinc/nets.boot
+    - source: salt://tinc/config/tinc/nets.boot
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - context:
+      tinc: {{ tinc }}
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc_network:

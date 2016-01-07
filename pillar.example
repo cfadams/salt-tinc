@@ -1,5 +1,8 @@
 tinc:
   network:
+    core:
+      cr02.startledphoenixsrv:
+        
     ALinuxNinja-Servers:
       subnet: 10.5.0.0/16
       master:
