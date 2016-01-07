@@ -1,13 +1,11 @@
 tinc:
   network:
-    core:
-      cr02.startledphoenixsrv:
-        
     ALinuxNinja-Servers:
       subnet: 10.5.0.0/16
+      port: 1160
       master:
         cr02.startledphoenixsrv:
-          public-ip: 127.0.0.1
+          public-ip: 192.168.2.1
       node:
         Vivian.remote.alinuxninjasrv:
-          public-ip: 176.227.202.149
+          public-ip: 192.168.2.2
