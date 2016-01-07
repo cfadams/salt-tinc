@@ -56,7 +56,7 @@ tinc_{{ grains['id'] }}-pubkey:
     - mode: 644
 tinc_{{ grains['id'] }}-config:
   file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id'] }}
+    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id']|replace(".", "_") }}
     - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/host
     - user: root
     - group: root
@@ -90,7 +90,7 @@ tinc-down:
 {% for master,master_setting in tinc['network'][network]['master'] %}
 tinc-{{ network }}-{{ master }}:
   file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ master }}
+    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_") }}
     - source: salt://secure/tinc/{{ network }}/{{ master }}/host
     - user: root
     - group: root
@@ -103,7 +103,7 @@ tinc-{{ network }}-{{ master }}:
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-{{ network }}-{{ node }}:
   file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ node }}
+    - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_") }}
     - source: salt://secure/tinc/{{ network }}/{{ node }}/host
     - user: root
     - group: root
@@ -116,9 +116,9 @@ tinc-{{ network }}-{{ node }}:
 {% endfor %}
 {% elif tinc['network'][network]['node'][grains['id']] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
-tinc-{{ network }}-{{ master }}:
+tinc-{{ network }}-{{ master|replace(".", "_") }}:
   file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ master }}
+    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_") }}
     - source: salt://secure/tinc/{{ network }}/{{ master }}/host
     - user: root
     - group: root
