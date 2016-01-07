@@ -18,5 +18,5 @@ CentOS support coming soon.
 1. Add the formula to the salt master via gitfs
 2. Create pillar based on pillar.example
 3. Create /srv/salt/secure/tinc
-4. To create a network, clone [salt-tinc-genkeys](https://github.com/ALinuxNinja/salt-tinc-genkeys) to /srv/salt/secure/tinc/<networkname>
-5. Create a salt-reactor to generate the certs (./gen_crt.sh <minion_name>). This can be done using events, or a salt-call while running the SLS.
+4. To create a network, clone [salt-tinc-genkeys](https://github.com/ALinuxNinja/salt-tinc-genkeys) to /srv/salt/secure/tinc/*network_name*
+5. Create a salt-reactor to generate the certs (./gen_crt.sh *minion_name*). This can be done using events, or a salt-call while running the SLS.
