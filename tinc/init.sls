@@ -19,6 +19,22 @@ tinc_boot:
     - template: jinja
     - context:
       tinc: {{ tinc }}
+tinc_service:
+  service.running:
+    - name: tinc
+    - enable: True
+    - watch:
+{% for network,network_setting in tinc['network'].iteritems() %}
+{% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
+      - file: tinc-{{ network }}_network
+      - file: tinc-{{ network }}_config
+      - file: tinc-{{ network }}_{{ grains['id'] }}-privkey
+      - file: tinc-{{ network }}_{{ grains['id'] }}-pubkey
+      - file: tinc-{{ network }}-up
+      - file: tinc-{{ network }}-down
+      - file: /etc/tinc/{{ network }}/hosts/*
+{% endif %}
+{% endfor %}
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc-{{ network }}_network:
