@@ -32,7 +32,7 @@ tinc_service:
 {% endfor %}
 tinc_cleanup:
   cmd.run:
-    - name: rm -rf /etc/tinc/*
+    - name: rm -rf /etc/tinc/*/*
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc-{{ network }}_network:
