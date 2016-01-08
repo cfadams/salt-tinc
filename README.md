@@ -11,8 +11,7 @@ Currently extremely experimental and still under development
 
 ## Supports
 - Ubuntu 14.04
-
-CentOS support coming soon.
+- Centos 7 (EPEL Required) (Experimental)
 
 ## Setup
 1. Add the formula to the salt master via gitfs
