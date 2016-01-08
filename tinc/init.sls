@@ -40,9 +40,6 @@ tinc_service:
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc_service-{{ network }}:
-  file.symlink:
-    - name: /lib/systemd/system/tincd@.service
-    - target: /lib/systemd/system/tincd@{{ network }}.service
   service.running:
     - name: tincd@{{ network }}
     - enable: True
@@ -51,8 +48,6 @@ tinc_service-{{ network }}:
       - file: /etc/tinc/{{ network }}/hosts/*
 {% else %}
 tinc_service:
-  file.absent:
-    - name: /lib/systemd/service/tinc@{{ network }}.service
   service.disabled:
     - name: tinc@{{ network }}
 {% endif %}
