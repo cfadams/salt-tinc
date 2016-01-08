@@ -41,10 +41,10 @@ tinc_service:
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc_service-{{ network }}:
   file.symlink:
-    - name: /lib/systemd/system/tinc@.service
-    - target: /lib/systemd/service/tinc@{{ network }}.service
+    - name: /lib/systemd/system/tincd@.service
+    - target: /lib/systemd/system/tincd@{{ network }}.service
   service.running:
-    - name: tinc@{{ network }}
+    - name: tincd@{{ network }}
     - enable: True
     - watch:
       - file: /etc/tinc/{{ network }}/*
