@@ -26,7 +26,7 @@ tinc_service:
     - watch:
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
-      - file: /etc/tinc/{{ network }}
+      - file: /etc/tinc/{{ network }}/*
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endif %}
 {% endfor %}
