@@ -30,9 +30,6 @@ tinc_service:
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endif %}
 {% endfor %}
-tinc_cleanup:
-  cmd.run:
-    - name: rm -rf /etc/tinc/*/*
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc-{{ network }}_network:
@@ -42,6 +39,9 @@ tinc-{{ network }}_network:
     - group: root
     - mode: 755
     - makedirs: True
+tinc-{{ network }}_cleanup:
+  cmd.run:
+    - name: rm -rf /etc/tinc/{{ network }}/hosts/*
 tinc-{{ network }}_config:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc.conf
