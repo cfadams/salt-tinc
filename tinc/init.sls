@@ -76,6 +76,8 @@ tinc-{{ network }}_{{ grains['id'] }}-config:
     - group: root
     - mode: 644
     - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
     - context:
       tinc: {{ tinc }}
       host: {{ grains['id'] }}
@@ -110,6 +112,8 @@ tinc-{{ network }}-{{ master }}:
     - group: root
     - mode: 644
     - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
     - context:
       node: {{ master }}
 {% endfor %}
@@ -123,6 +127,8 @@ tinc-{{ network }}-{{ node }}:
     - group: root
     - mode: 644
     - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
     - context:
       tinc: {{ tinc }}
       host: {{ node }}
@@ -138,6 +144,8 @@ tinc-{{ network }}-{{ master|replace(".", "_") }}:
     - group: root
     - mode: 644
     - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
     - context:
       tinc: {{ tinc }}
       host: {{ master }}
