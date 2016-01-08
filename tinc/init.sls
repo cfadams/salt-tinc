@@ -1,14 +1,18 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
 tinc_install:
+{% if grains['os'] == 'Ubuntu' %}
   pkgrepo.managed:
     - ppa: {{ tinc['repo']['tinc'] }}
     - file: /etc/apt/sources.list.d/tinc.list
     - require_in:
       - pkg: tinc
+{% endif %}
   pkg.latest:
     - name: tinc
     - refresh: True
+{% if grains['os'] == 'Ubuntu' %}
     - pkgrepo: tinc_install
+{% endif %}
 {% if tinc['init-system'] == 'upstart' %}
 tinc_boot:
   file.managed:
