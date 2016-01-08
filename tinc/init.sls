@@ -9,6 +9,7 @@ tinc_install:
     - name: tinc
     - refresh: True
     - pkgrepo: tinc_install
+{% if tinc['init-system'] == 'upstart' %}
 tinc_boot:
   file.managed:
     - name: /etc/tinc/nets.boot
@@ -30,6 +31,24 @@ tinc_service:
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endif %}
 {% endfor %}
+{% endif %}
+{% if tinc['init-system'] == 'systemd' %}
+{% for network,network_setting in tinc['network'].iteritems() %}
+{% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
+tinc_service-{{ network }}:
+  service.running:
+    - name: tinc@{{ network }}
+    - enable: True
+    - watch:
+      - file: /etc/tinc/{{ network }}/*
+      - file: /etc/tinc/{{ network }}/hosts/*
+{% else %}
+tinc_service:
+  service.disabled:
+    - name: tinc@{{ network }}
+{% endif %}
+{% endfor %}
+{% endif %}
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc-{{ network }}_network:

@@ -2,4 +2,8 @@ Ubuntu:
   common:
     repo:
       tinc: "alinuxninja/tinc"
-CentOS: {}
+  trusty:
+    init-system: upstart
+CentOS:
+  7:
+    init-system: systemd
