@@ -2,3 +2,4 @@ Ubuntu:
   common:
     repo:
       tinc: "alinuxninja/tinc"
+CentOS: {}

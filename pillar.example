@@ -3,6 +3,9 @@ tinc:
     ALinuxNinja-Servers:
       subnet: 10.5.0.0/16
       port: 1160
+      cipher: aes-128-cbc
+      compression: 10
+      digest: sha1
       master:
         cr02.startledphoenixsrv:
           public-ip: 192.168.2.1
