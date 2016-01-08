@@ -5,5 +5,5 @@ Ubuntu:
   trusty:
     init-system: upstart
 CentOS:
-  7:
+  common:
     init-system: systemd
