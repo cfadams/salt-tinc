@@ -126,7 +126,7 @@ tinc-{{ network }}-down:
     - mode: 755
 {% endif %}
 {% if network == "core" %}
-{% for master,master_setting in tinc['network'][network]['master'] %}
+{% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
 tinc-{{ network }}-{{ master }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_") }}
