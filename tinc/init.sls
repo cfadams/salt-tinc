@@ -139,7 +139,7 @@ tinc-{{ network }}-{{ master }}:
       - cmd: tinc-{{ network }}_cleanup
     - context:
       tinc: {{ tinc }}
-      host: {{ node }}
+      host: {{ master }}
       network: {{ network }}
 {% endfor %}
 {% elif tinc['network'][network]['master'][grains['id']] is defined %}
