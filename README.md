@@ -19,3 +19,6 @@ Currently extremely experimental and still under development
 3. Create /srv/salt/secure/tinc
 4. To create a network, clone [salt-tinc-genkeys](https://github.com/ALinuxNinja/salt-tinc-genkeys) to /srv/salt/secure/tinc/*network_name*
 5. Create a salt-reactor to generate the certs (./gen_crt.sh *minion_name*). This can be done using events, or a salt-call while running the SLS.
+
+## Notes
+- The "core" network is used to link together nodes if necessary
