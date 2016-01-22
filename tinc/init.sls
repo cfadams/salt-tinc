@@ -125,7 +125,7 @@ tinc-{{ network }}-down:
     - group: root
     - mode: 755
 {% endif %}
-{% if network == "core" %}
+{% if network == "core" and tinc['network'][network]['master'][grains['id']] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
 tinc-{{ network }}-{{ master }}:
   file.managed:
