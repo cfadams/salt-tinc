@@ -1,4 +1,7 @@
 tinc:
+  services:
+    dns: True
+    ospf: True
   internal-domains:
     - startledphoenixsrv
     - alinuxninjasrv
