@@ -50,6 +50,12 @@ tinc_service:
 {% endif %}
 {% endfor %}
 {% endif %}
+tinc_service-{{ network }}_dnsmasq:
+  file.managed:
+    - name: /etc/dnsmasq.d/tinc-networks
+    - source: ~
+    - user: root
+    - group: root
 {% for network,network_setting in tinc['network'].iteritems() %}
 tinc-{{ network }}_network:
   file.directory:
