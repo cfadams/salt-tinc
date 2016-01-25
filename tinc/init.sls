@@ -1,5 +1,5 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
-tinc_install:
+tinc_repo:
 {% if grains['os'] == 'Ubuntu' %}
   pkgrepo.managed:
     - ppa: {{ tinc['repo']['tinc'] }}
@@ -7,9 +7,10 @@ tinc_install:
     - require_in:
       - pkg: tinc
 {% endif %}
+tinc_install:
   pkg.latest:
-    - name: tinc
     - refresh: True
+    - pkgs: {{tinc['packages']}}
 {% if grains['os'] == 'Ubuntu' %}
     - pkgrepo: tinc_install
 {% endif %}

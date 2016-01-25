@@ -2,6 +2,10 @@ Ubuntu:
   common:
     repo:
       tinc: "alinuxninja/tinc"
+    packages:
+      - tinc
+      - dnsmasq
+      - bird
   trusty:
     init-system: upstart
 CentOS:
