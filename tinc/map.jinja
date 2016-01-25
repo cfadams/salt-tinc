@@ -27,9 +27,9 @@
 {% if network != 'core' and (network_setting['node'][grains['id']] is not defined and network_setting['master'][grains['id']] is not defined) %}
 {% do tinc_pillar.network.pop(network) %}
 {% elif network_setting['node'][grains['id']] is defined %}
-{% do tinc_pillar['network'][network]['type'] = "node" }
+{% set tinc_pillar['network'][network]['type'] = "node" }
 {% elif network_setting['master'][grains['id']] is defined %}
-{% do tinc_pillar['network'][network]['type'] = "master" }
+{% set tinc_pillar['network'][network]['type'] = "master" }
 {% endif %}
 {% endfor %}
 
