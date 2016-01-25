@@ -52,6 +52,9 @@ tinc_service:
 {% endif %}
 {% endfor %}
 {% endif %}
+tinc_dnsmasq-cleanup:
+  cmd.run:
+    name: rm /etc/dnsmasq.d/tinc/networks
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc-{{ network }}_network:
@@ -104,7 +107,7 @@ tinc-{{ network }}_{{ grains['id'] }}-config:
       tinc: {{ tinc }}
       host: {{ grains['id'] }}
       network: {{ network }}
-tinc-{{ network }}-up:
+tinc-{{ network }}_up:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc-up
     - source: salt://tinc/config/tinc/tinc-up
@@ -116,7 +119,7 @@ tinc-{{ network }}-up:
       tinc: {{ tinc }}
       network: {{ network }}
       node: {{ grains['id'] }}
-tinc-{{ network }}-down:
+tinc-{{ network }}_down:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc-down
     - source: salt://tinc/config/tinc/tinc-down
@@ -160,7 +163,7 @@ tinc-{{ network }}-{{ node }}:
 {% endfor %}
 {% elif tinc['network'][network]['node'][grains['id']] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
-tinc-{{ network }}-{{ master|replace(".", "_")|replace("-", "_") }}:
+tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
     - source: salt://secure/tinc/{{ network }}/{{ master }}/host
@@ -174,6 +177,21 @@ tinc-{{ network }}-{{ master|replace(".", "_")|replace("-", "_") }}:
       tinc: {{ tinc }}
       host: {{ master }}
       network: {{ network }}
+{% if tinc['internal-domains'] is defined %}
+tinc-{{ network }}-{{ master|replace(".", "_")|replace("-", "_") }}_dnsmasq:
+  file.append:
+    - name: /etc/dnsmasq.d/tinc-networks
+    - user: root
+    - group: root
+    - mode: 644
+    - text:
+      {% for server in tinc['network'][network]['dns-servers'] %}
+      - "server=/#/{{ server }}"
+      {% endfor %}
+      {% for domain in tinc['internal-domains'] %}
+      - "server=/{{ domain }}/{{ master_setting['local-ip'] }}"
+      {% endfor %}
+{% endif %}
 {% endfor %}
 {% endif %}
 {% endfor %}

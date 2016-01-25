@@ -1,4 +1,7 @@
 tinc:
+  internal-domains:
+    - startledphoenixsrv
+    - alinuxninjasrv
   network:
     ALinuxNinja-Servers:
       subnet: 10.5.0.0/16
@@ -6,6 +9,9 @@ tinc:
       cipher: aes-128-cbc
       compression: 10
       digest: sha1
+      dns-servers:
+        - 8.8.8.8
+        - 8.8.4.4
       master:
         cr02.startledphoenixsrv:
           public-ip: 192.168.2.1
