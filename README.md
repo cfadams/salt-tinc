@@ -20,15 +20,6 @@ Currently extremely experimental and still under development
 5. Create a salt-reactor to generate the certs (./gen_crt.sh *minion_name*). This can be done using events, or a salt-call while running the SLS.
 
 ## Configuration
-#### tinc['service']['dns']
-Type: Future Release
-
-Turns DNS resolution on or off. Required for resolving other minions in the tinc network using DNS
-
-#### tinc['service']['ospf']
-Type: Future Release
-
-Turns BIRD's OSPF on or off. Using OSPF, "introducers" on the "core" network can transfer data between subnets that may be connected to one server, but not another.
 
 #### tinc['internal-domains']
 Type: Optional
@@ -60,10 +51,17 @@ Type: Future Release
 
 Sets the digest that tinc uses to communicate
 
-#### tinc['network'][network]['dns-servers']
+#### tinc['service']['dns']['enabled']
 Type: Optional
 
+Enables DNS resolution for client minion names.
+
 Sets the DNS servers used by the minion (Used with dnsmasq)
+
+#### tinc['service']['ospf']['enabled']
+Type: Future Release
+
+Turns BIRD's OSPF on or off. Using OSPF, "introducers" on the "core" network can transfer data between subnets that may be connected to one server, but not another.
 
 #### tinc['network'][network][master]
 Type: Required
