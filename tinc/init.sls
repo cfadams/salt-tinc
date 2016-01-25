@@ -29,10 +29,8 @@ tinc_service:
     - enable: True
     - watch:
 {% for network,network_setting in tinc['network'].iteritems() %}
-{% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
       - file: /etc/tinc/{{ network }}/*
       - file: /etc/tinc/{{ network }}/hosts/*
-{% endif %}
 {% endfor %}
 {% endif %}
 {% if tinc['init-system'] == 'systemd' %}
@@ -53,7 +51,6 @@ tinc_service:
 {% endfor %}
 {% endif %}
 {% for network,network_setting in tinc['network'].iteritems() %}
-{% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc-{{ network }}_network:
   file.directory:
     - name: /etc/tinc/{{ network }}/hosts
@@ -123,7 +120,6 @@ tinc-{{ network }}_down:
     - user: root
     - group: root
     - mode: 755
-{% endif %}
 {% if network == "core" and tinc['network'][network]['master'][grains['id']] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
 tinc-{{ network }}-{{ master }}:
