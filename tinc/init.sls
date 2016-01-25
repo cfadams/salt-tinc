@@ -177,7 +177,7 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
       tinc: {{ tinc }}
       host: {{ master }}
       network: {{ network }}
-{% if tinc['internal-domains'] is defined %}
+{% if tinc['dns']['internal-domains'] is defined %}
 tinc-{{ network }}-{{ master|replace(".", "_")|replace("-", "_") }}_dnsmasq:
   file.append:
     - name: /etc/dnsmasq.d/tinc-networks
@@ -185,7 +185,7 @@ tinc-{{ network }}-{{ master|replace(".", "_")|replace("-", "_") }}_dnsmasq:
     - group: root
     - mode: 644
     - text:
-      {% for server in tinc['network'][network]['dns-servers'] %}
+      {% for server in tinc['dns']['external-servers'] %}
       - "server=/#/{{ server }}"
       {% endfor %}
       {% for domain in tinc['internal-domains'] %}
