@@ -186,7 +186,7 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
 {% if tinc['dns']['internal-domains'] is defined %}
 tinc-{{ network }}-{{ master|replace(".", "_")|replace("-", "_") }}_dnsmasq:
   file.append:
-    - name /etc/dnsmasq.d/tinc-networks
+    - name: /etc/dnsmasq.d/tinc-networks
     - text:
       {% for server in tinc['dns']['external-servers'] %}
       - "server=/#/{{ server }}"
