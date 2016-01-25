@@ -2,6 +2,9 @@ tinc:
   service:
     dns:
       enabled: True
+      external-servers
+        - 8.8.8.8
+        - 8.8.4.4
       internal-domains:
         - startledphoenixsrv
         - alinuxninjasrv

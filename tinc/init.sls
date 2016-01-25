@@ -50,14 +50,16 @@ tinc_service:
 {% endif %}
 {% endfor %}
 {% endif %}
-{% for network, network_setting in tinc['network'].iteritems() %}
-tinc_service-{{ network }}_dnsmasq:
+tinc_service-dnsmasq-defaultdns:
   file.managed:
-    - name: /etc/dnsmasq.d/tinc-networks
-    - source: ~
-    - user: root
+    - name: /etc/dnsmasq.d/tinc
+    - name: root
     - group: root
-{% endfor %}
+    - mode: 644
+    - contents:
+      {% for server in tinc['service']['dns']['external-servers'] %}
+      - "server=/#/{{ server }}"
+      {% endfor %}
 {% for network,network_setting in tinc['network'].iteritems() %}
 tinc-{{ network }}_network:
   file.directory:
