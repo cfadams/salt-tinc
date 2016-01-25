@@ -54,7 +54,7 @@ tinc_service:
 {% endif %}
 tinc_dnsmasq-cleanup:
   cmd.run:
-    - name: rm /etc/dnsmasq.d/tinc/networks
+    - name: rm /etc/dnsmasq.d/tinc-networks
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc-{{ network }}_network:
