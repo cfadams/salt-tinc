@@ -188,7 +188,7 @@ tinc-{{ network }}-{{ master|replace(".", "_")|replace("-", "_") }}_dnsmasq:
       {% for server in tinc['dns']['external-servers'] %}
       - "server=/#/{{ server }}"
       {% endfor %}
-      {% for domain in tinc['internal-domains'] %}
+      {% for domain in tinc['dns']['internal-domains'] %}
       - "server=/{{ domain }}/{{ master_setting['local-ip'] }}"
       {% endfor %}
 {% endif %}
