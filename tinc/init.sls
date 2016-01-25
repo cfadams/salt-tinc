@@ -52,15 +52,6 @@ tinc_service:
 {% endif %}
 {% endfor %}
 {% endif %}
-tinc_dnsmasq-cleanup:
-  cmd.run:
-    - name: rm /etc/dnsmasq.d/tinc-networks
-  file.managed:
-    - name: /etc/dnsmasq.d/tinc-networks
-    - user: root
-    - group: root
-    - mode: 644
-    - contents: []
 {% for network,network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc-{{ network }}_network:
@@ -183,18 +174,6 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
       tinc: {{ tinc }}
       host: {{ master }}
       network: {{ network }}
-{% if tinc['dns']['internal-domains'] is defined %}
-tinc-{{ network }}-{{ master|replace(".", "_")|replace("-", "_") }}_dnsmasq:
-  file.append:
-    - name: /etc/dnsmasq.d/tinc-networks
-    - text:
-      {% for server in tinc['dns']['external-servers'] %}
-      - "server=/#/{{ server }}"
-      {% endfor %}
-      {% for domain in tinc['dns']['internal-domains'] %}
-      - "server=/{{ domain }}/{{ master_setting['local-ip'] }}"
-      {% endfor %}
-{% endif %}
 {% endfor %}
 {% endif %}
 {% endfor %}

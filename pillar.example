@@ -1,10 +1,12 @@
 tinc:
-  services:
-    dns: True
-    ospf: True
-  internal-domains:
-    - startledphoenixsrv
-    - alinuxninjasrv
+  service:
+    dns:
+      enabled: True
+      internal-domains:
+        - startledphoenixsrv
+        - alinuxninjasrv
+    ospf:
+      enabled: True
   network:
     ALinuxNinja-Servers:
       subnet: 10.5.0.0/16
