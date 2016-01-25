@@ -24,7 +24,7 @@
 
 {# Remove stuff that is not needed #}
 {% for network, network_setting in tinc_pillar['network'].iteritems %}
-{% if network != 'core' and ( network_setting['node'][grains['id']] is not defined and network_setting['master'][grains['id']] is not defined %}
+{% if network != 'core' and (network_setting['node'][grains['id']] is not defined and network_setting['master'][grains['id']] is not defined) %}
 {% do tinc_pillar.network.pop(network) %}
 {% elif network_setting['node'][grains['id']] is defined %}
 {% do tinc_pillar['network'][network]['type'] = "node" }
