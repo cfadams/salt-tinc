@@ -34,7 +34,7 @@ tinc_service:
 {% endfor %}
 {% endif %}
 {% if tinc['init-system'] == 'systemd' %}
-{% for network,network_setting in tinc['network'].iteritems() %}
+{% for network, network_setting in tinc['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc_service-{{ network }}:
   service.running:
@@ -50,12 +50,14 @@ tinc_service:
 {% endif %}
 {% endfor %}
 {% endif %}
+{% for network, network_setting in tinc['network'].iteritems() %}
 tinc_service-{{ network }}_dnsmasq:
   file.managed:
     - name: /etc/dnsmasq.d/tinc-networks
     - source: ~
     - user: root
     - group: root
+{% endfor %}
 {% for network,network_setting in tinc['network'].iteritems() %}
 tinc-{{ network }}_network:
   file.directory:
