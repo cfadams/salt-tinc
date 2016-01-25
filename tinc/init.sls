@@ -4,15 +4,13 @@ tinc_repo:
   pkgrepo.managed:
     - ppa: {{ tinc['repo']['tinc'] }}
     - file: /etc/apt/sources.list.d/tinc.list
-    - require_in:
-      - pkg: tinc
 {% endif %}
 tinc_install:
   pkg.latest:
     - refresh: True
     - pkgs: {{tinc['packages']}}
 {% if grains['os'] == 'Ubuntu' %}
-    - pkgrepo: tinc_install
+    - pkgrepo: tinc_repo
 {% endif %}
 {% if tinc['init-system'] == 'upstart' %}
 tinc_boot:
