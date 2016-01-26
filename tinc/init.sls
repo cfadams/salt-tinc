@@ -53,7 +53,7 @@ tinc_service:
 tinc_service-dnsmasq-defaultdns:
   file.managed:
     - name: /etc/dnsmasq.d/tinc
-    - name: root
+    - user: root
     - group: root
     - mode: 644
     - contents:
