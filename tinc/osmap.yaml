@@ -3,11 +3,22 @@ Ubuntu:
     repo:
       tinc: "alinuxninja/tinc"
     packages:
+      - libpython2.7
+      - augeas-tools
+      - augeas-lenses
+      - libaugeas0
+      - python-augeas
       - tinc
       - dnsmasq
       - bird
   trusty:
     init-system: upstart
 CentOS:
-  common:
+  7:
     init-system: systemd
+    packages:
+      - augeas
+      - augeas-libs
+      - python-augeas
+      - dnsmasq
+      - tinc
