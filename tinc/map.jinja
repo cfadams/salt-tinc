@@ -26,8 +26,8 @@
 {% for service, service_settings in pillar['tinc']['service'].iteritems() %}
 {% set service_common = salt['pillar.get']('tinc:service:'~service~':common',default={},merge=True) %}
 {% set service_minion = salt['pillar.get']('tinc:service:'~service~':'~grains['id'],default=service_common,merge=True) %}
-{% do tinc_pillar.service.clear(service) %}
-{% do tinc_pillar.service.update(service, service_minion) %}
+{% do tinc_pillar['service'][service].clear() %}
+{% do tinc_pillar['service'][service].update(service_minion) %}
 {% endfor %}
 {% endif %}
 
