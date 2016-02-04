@@ -223,4 +223,4 @@ bird_conf:
       {% endfor %}
       - ' };'
       - '};'
-{% endfor %}
+{% endif %}
