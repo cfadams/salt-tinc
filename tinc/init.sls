@@ -183,3 +183,42 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
 {% endfor %}
 {% endif %}
 {% endfor %}
+bird_conf:
+  file.managed:
+    - name: /etc/bird/bird.conf
+    - user: root
+    - group: root
+    - contents:
+      - 'log syslog { debug, trace, info, remote, warning, error, auth, fatal, bug };'
+      - 'router id {{pillar['tinc']['network']['core']['master'][grains['id']]['local-ip']}};'
+      - 'protocol kernel {'
+      - ' persist;'
+      - ' scan time 20;'
+      - ' export all;'
+      - '}'
+      - 'protocol device {'
+      - ' scan time 10;'
+      - '}'
+      - 'protocol ospf core {'
+      - ' tick 2;'
+      - ' rfc1583compat yes;'
+      - ' area 0.0.0.0 {'
+      - '   stub no;'
+      {% for interface in core['routing']['listen-interfaces'] %}
+      - '   interface "{{ interface }}" {'
+      - '     hello 9;'
+      - '     retransmit 6;'
+      - '     cost 10;'
+      - '     transmit delay 5;'
+      - '     dead count 5;'
+      - '     wait 50;'
+      - '     type broadcast;'
+      - '   };'
+      {% endfor %}
+      {% for interface in core['routing']['passive-interfaces'] %}
+      - '   interface "{{ interface }}" {'
+      - '     stub;'
+      - '   };'
+      {% endfor %}
+      - ' };'
+      - '};'

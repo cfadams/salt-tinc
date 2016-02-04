@@ -20,6 +20,17 @@
 {% set tinc_pillar = salt['pillar.get']('tinc',default=defaults.tinc,merge=True) %}
 {% else %}
 {% set tinc_pillar = salt['pillar.get']('',default=defaults.tinc,merge=True) %}
+
+{# Merge settings for services #}
+{% if pillar['tinc']['service'] is defined %}
+{% for service, service_settings in pillar['tinc']['service'].iteritems() %}
+{% set service_common = salt['pillar.get']('tinc:service:'~service~':common',default={},merge=True) %}
+{% set service_minion = salt['pillar.get']('tinc:service:'~service~':'~grains['id'],default=service_common,merge=True) %}
+{% do tinc_pillar.service.pop(service) %}
+{% do tinc_pillar.service.update(service, service_minion)}
+{% endfor %}
+{% endif %}
+
 {% endif %}
 
 {# Remove stuff that is not needed #}

@@ -9,6 +9,9 @@ tinc:
         - startledphoenixsrv
         - alinuxninjasrv
     ospf:
+      common:
+        listen-interfaces:
+          - 
       enabled: True
   network:
     ALinuxNinja-Servers:
