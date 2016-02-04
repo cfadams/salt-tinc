@@ -204,7 +204,7 @@ bird_conf:
       - ' rfc1583compat yes;'
       - ' area 0.0.0.0 {'
       - '   stub no;'
-      {% for interface in core['routing']['listen-interfaces'] %}
+      {% for interface in tinc['service']['ospf']['listen-interfaces'] %}
       - '   interface "{{ interface }}" {'
       - '     hello 9;'
       - '     retransmit 6;'
@@ -215,7 +215,7 @@ bird_conf:
       - '     type broadcast;'
       - '   };'
       {% endfor %}
-      {% for interface in core['routing']['passive-interfaces'] %}
+      {% for interface in tinc['service']['ospf']['passive-interfaces'] %}
       - '   interface "{{ interface }}" {'
       - '     stub;'
       - '   };'
