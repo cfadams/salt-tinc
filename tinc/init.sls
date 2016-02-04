@@ -183,6 +183,7 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
 {% endfor %}
 {% endif %}
 {% endfor %}
+{% if tinc['service']['ospf'] is defined %}
 bird_conf:
   file.managed:
     - name: /etc/bird/bird.conf
@@ -222,3 +223,4 @@ bird_conf:
       {% endfor %}
       - ' };'
       - '};'
+{% endfor %}
