@@ -2,7 +2,7 @@ tinc:
   service:
     dns:
       enabled: True
-      external-servers
+      external-servers:
         - 8.8.8.8
         - 8.8.4.4
       internal-domains:
@@ -11,7 +11,7 @@ tinc:
     ospf:
       common:
         listen-interfaces:
-          - 
+          -
       enabled: True
   network:
     ALinuxNinja-Servers:
@@ -26,6 +26,9 @@ tinc:
       master:
         cr02.startledphoenixsrv:
           public-ip: 192.168.2.1
+          scope:
+            start-ip: 10.5.1.0
+            end-ip: 10.5.1.0
       node:
         Vivian.remote.alinuxninjasrv:
           public-ip: 192.168.2.2

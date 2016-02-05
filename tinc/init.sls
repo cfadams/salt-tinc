@@ -131,7 +131,18 @@ tinc-{{ network }}_down:
     - group: root
     - mode: 755
 {% if network == "core" and tinc['network'][network]['master'][grains['id']] is defined %}
+tinc-{{ network }}-{{ dhcp }}:
+  file.managed:
+    - name: /etc/dnsmasq.d/tinc-network-{{ network }}
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - contents:
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
+{% if tinc['network'][network]['scope']['start'] is defined and tinc['network'][network]['scope']['end'] is defined %}
+- dhcp-range={{ tinc['network'][network]['scope']['start'] }},{{ tinc['network'][network]['scope']['start'] }}
+{% endif %}
 tinc-{{ network }}-{{ master }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
@@ -188,7 +199,6 @@ bird_conf:
       - ' };'
       - '};'
 {% endif %}
-
 {% elif tinc['network'][network]['master'][grains['id']] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-{{ network }}-{{ node }}:
