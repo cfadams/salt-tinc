@@ -36,7 +36,7 @@
 {% if pillar['tinc']['service']['ospf'][grains['id']] is defined %}
 {% set service_data = salt['pillar.get']('tinc:service:ospf:'~grains['id'],default=service_data,merge=True) %}
 {% endif %}
-{% do clean_pillar.update('service:ospf',service_data) %}
+{% do clean_pillar.service.ospf.update(service_data) %}
 {% else %}
 {% do clean_pillar.service.ospf.clear() %}
 {% endif %}
