@@ -131,7 +131,7 @@ tinc-{{ network }}_down:
     - group: root
     - mode: 755
 {% if tinc['network'][network]['master'][grains['id']] is defined %}
-{% if network != core %}
+{% if network != "core" %}
 tinc-{{ network }}-dhcp:
   file.managed:
     - name: /etc/dnsmasq.d/tinc-network-{{ network }}
