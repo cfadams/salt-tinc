@@ -38,6 +38,13 @@
 {% else %}
 {% do clean_pillar.service.ospf.update(service_data) %}
 {% endif %}
+{% set service_data = salt['pillar.get']('tinc:service:dns:common',default={},merge=True) %}
+{% set service_data = salt['pillar.get']('tinc:service:dns:'~grains['id'],default=service_data,merge=True) %}
+{% if pillar['tinc']['service']['dns']['common'] is not defined and pillar['tinc']['service']['dns'][grains['id']] is not defined %}
+{% do clean_pillar.service.dns.clear() %}
+{% else %}
+{% do clean_pillar.service.dns.update(service_data) %}
+{% endif %}
 
 {# Create import pillar #}
 {% set tinc = clean_pillar %}
