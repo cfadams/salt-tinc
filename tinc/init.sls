@@ -140,8 +140,8 @@ tinc-{{ network }}-dhcp:
     - mode: 644
     - template: jinja
     - contents:
-      {% if tinc['network'][network]['scope']['start'] is defined and tinc['network'][network]['scope']['end'] is defined  and network != core %}
-      - dhcp-range={{ tinc['network'][network]['scope']['start'] }},{{ tinc['network'][network]['scope']['start'] }}
+      {% if tinc['network'][network]['master'][grains['id']]['scope']['start'] is defined and tinc['network'][network]['master'][grains['id']]['scope']['end'] is defined %}
+      - dhcp-range={{ tinc['network'][network]['master'][grains['id']]['scope']['start'] }},{{ tinc['network'][network]['master'][grains['id']]['scope']['start'] }}
       {% endif %}
 {% endif %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
