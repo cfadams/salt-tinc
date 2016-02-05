@@ -130,7 +130,7 @@ tinc-{{ network }}_down:
     - user: root
     - group: root
     - mode: 755
-{% if network == "core" and tinc['network'][network]['master'][grains['id']] is defined %}
+{% if tinc['network'][network]['master'][grains['id']] is defined %}
 tinc-{{ network }}-dhcp:
   file.managed:
     - name: /etc/dnsmasq.d/tinc-network-{{ network }}
@@ -140,7 +140,7 @@ tinc-{{ network }}-dhcp:
     - template: jinja
     - contents:
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
-{% if tinc['network'][network]['scope']['start'] is defined and tinc['network'][network]['scope']['end'] is defined %}
+{% if tinc['network'][network]['scope']['start'] is defined and tinc['network'][network]['scope']['end'] is defined  and network != core %}
 - dhcp-range={{ tinc['network'][network]['scope']['start'] }},{{ tinc['network'][network]['scope']['start'] }}
 {% endif %}
 tinc-{{ network }}-{{ master }}:
@@ -199,23 +199,6 @@ bird_conf:
       - ' };'
       - '};'
 {% endif %}
-{% elif tinc['network'][network]['master'][grains['id']] is defined %}
-{% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
-tinc-{{ network }}-{{ node }}:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ network }}/{{ node }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ node }}
-      network: {{ network }}
-{% endfor %}
 {% elif tinc['network'][network]['node'][grains['id']] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
 tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
