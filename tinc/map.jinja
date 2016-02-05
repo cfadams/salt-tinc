@@ -25,11 +25,12 @@
 {# Remove stuff that is not needed #}
 {% for network, network_setting in pillar['tinc']['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is not defined and network_setting['master'][grains['id']] is not defined %}
-{% do clean_pillar.network.pop(network) %}
+{% do tinc_pillar.network.pop(network) %}
 {% endif %}
 {% endfor %}
 
 {# Merge Services #}
+{% set clean_pillar = tinc_pillar %}
 {% if clean_pillar['service']['ospf']['common'] is defined %}
 {% set service_data = salt['pillar.get']('tinc:service:ospf:common',default={},merge=True) %}
 {% if pillar['tinc']['service']['ospf'][grains['id']] is defined %}
