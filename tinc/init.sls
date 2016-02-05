@@ -12,6 +12,7 @@ tinc_install:
 {% if grains['os'] == 'Ubuntu' %}
     - pkgrepo: tinc_repo
 {% endif %}
+{% if tinc['service']['ospf'] is defined  and tinc['service']['ospf']['enabled'] == True %}
 bird_conf:
   file.managed:
     - name: /etc/bird/bird.conf
@@ -200,7 +201,6 @@ tinc-{{ network }}-{{ master }}:
       host: {{ master }}
       network: {{ network }}
 {% endfor %}
-{% if tinc['service']['ospf'] is defined  and tinc['service']['ospf']['enabled'] == True %}
 {% elif tinc['network'][network]['node'][grains['id']] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
 tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
