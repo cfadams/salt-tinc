@@ -20,27 +20,25 @@
 {% set tinc_pillar = salt['pillar.get']('tinc',default=defaults.tinc,merge=True) %}
 {% else %}
 {% set tinc_pillar = salt['pillar.get']('',default=defaults.tinc,merge=True) %}
-
-{# Merge settings for services}
-{% if pillar['tinc']['service'] is defined %}
-{% for service, service_settings in pillar['tinc']['service'].iteritems() %}
-{% set service_common = salt['pillar.get']('tinc:service:'~service~':common',default={},merge=True) %}
-{% set service_minion = salt['pillar.get']('tinc:service:'~service~':'~grains['id'],default=service_common,merge=True) %}
-{% do tinc_pillar['service'][service].clear() %}
-{% do tinc_pillar['service'][service].update(service_minion) %}
-{% endfor %}
-{% endif  #}
-
-{% set service_common = salt['pillar.get']('tinc:service:ospf:common') %}
-{% do tinc_pillar['service']['ospf'].update(service_common) %}
 {% endif %}
 
 {# Remove stuff that is not needed #}
 {% for network, network_setting in pillar['tinc']['network'].iteritems() %}
 {% if network_setting['node'][grains['id']] is not defined and network_setting['master'][grains['id']] is not defined %}
-{% do tinc_pillar.network.pop(network) %}
+{% do clean_pillar.network.pop(network) %}
 {% endif %}
 {% endfor %}
+
+{# Merge Services #}
+{% set tinc_pillar == clean_pillar %}
+{% if clean_pillar['service']['ospf']['common'] is defined %}
+{% set tinc_pillar.service.ospf = salt['pillar.get']('tinc:service:ospf:common',default={},merge=True) %}
+{% elif pillar['tinc']['service']['ospf'][grains['id']] is defined %}
+{% set tinc_pillar.service.ospf = salt['pillar.get']('tinc:service:ospf:'~grains['id'],default=tinc_pillar.service.ospf,merge=True) %}
+{% endif %}
+{% else %}
+{% do tinc_pillar.service.ospf.clear() %}
+{% endif %}
 
 {# Create import pillar #}
 {% set tinc = tinc_pillar %}
