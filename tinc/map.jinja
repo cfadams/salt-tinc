@@ -31,14 +31,12 @@
 
 {# Merge Services #}
 {% set clean_pillar = tinc_pillar %}
-{% if clean_pillar['service']['ospf']['common'] is defined %}
 {% set service_data = salt['pillar.get']('tinc:service:ospf:common',default={},merge=True) %}
-{% if pillar['tinc']['service']['ospf'][grains['id']] is defined %}
 {% set service_data = salt['pillar.get']('tinc:service:ospf:'~grains['id'],default=service_data,merge=True) %}
-{% endif %}
-{% do clean_pillar.service.ospf.update(service_data) %}
-{% else %}
+{% if pillar['tinc']['service']['ospf']['common'] is not defined and pillar['tinc']['service']['ospf'][grains['id']] is not defined %}
 {% do clean_pillar.service.ospf.clear() %}
+{% else %}
+{% do clean_pillar.service.ospf.update(service_data) %}
 {% endif %}
 
 {# Create import pillar #}
