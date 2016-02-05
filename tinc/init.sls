@@ -147,43 +147,7 @@ tinc-{{ network }}-{{ master }}:
       host: {{ master }}
       network: {{ network }}
 {% endfor %}
-{% elif tinc['network'][network]['master'][grains['id']] is defined %}
-{% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
-tinc-{{ network }}-{{ node }}:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ network }}/{{ node }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ node }}
-      network: {{ network }}
-{% endfor %}
-{% elif tinc['network'][network]['node'][grains['id']] is defined %}
-{% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
-tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ network }}/{{ master }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ master }}
-      network: {{ network }}
-{% endfor %}
-{% endif %}
-{% endfor %}
-{% if tinc['service']['ospf'] is defined %}
+{% if tinc['service']['ospf'] is defined  and tinc['service']['ospf']['enabled'] == True %}
 bird_conf:
   file.managed:
     - name: /etc/bird/bird.conf
@@ -224,3 +188,40 @@ bird_conf:
       - ' };'
       - '};'
 {% endif %}
+
+{% elif tinc['network'][network]['master'][grains['id']] is defined %}
+{% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
+tinc-{{ network }}-{{ node }}:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
+    - source: salt://secure/tinc/{{ network }}/{{ node }}/host
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
+    - context:
+      tinc: {{ tinc }}
+      host: {{ node }}
+      network: {{ network }}
+{% endfor %}
+{% elif tinc['network'][network]['node'][grains['id']] is defined %}
+{% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
+tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
+    - source: salt://secure/tinc/{{ network }}/{{ master }}/host
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
+    - context:
+      tinc: {{ tinc }}
+      host: {{ master }}
+      network: {{ network }}
+{% endfor %}
+{% endif %}
+{% endfor %}
