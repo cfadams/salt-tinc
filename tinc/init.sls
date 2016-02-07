@@ -187,7 +187,7 @@ bird_conf:
       {% endfor %}
       - ' };'
       - '};'
-{% if tinc['service']['ospf']['enable'] == True %}
+{% if tinc['service']['ospf']['enabled'] == True %}
   service.running:
     - name: bird
     - watch:
