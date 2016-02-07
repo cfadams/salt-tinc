@@ -187,6 +187,14 @@ bird_conf:
       {% endfor %}
       - ' };'
       - '};'
+{% if tinc['service']['ospf']['enable'] == True %}
+  service.running:
+    - name: bird
+    - watch:
+      - file: bird_conf
+{% else %}
+  service.disabled:
+    - name: bird
 {% endif %}
 
 {% elif tinc['network'][network]['master'][grains['id']] is defined %}
