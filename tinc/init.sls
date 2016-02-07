@@ -196,7 +196,7 @@ bird_conf:
   service.disabled:
     - name: bird
 {% endif %}
-
+{% endif %}
 {% elif tinc['network'][network]['master'][grains['id']] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-{{ network }}-{{ node }}:
