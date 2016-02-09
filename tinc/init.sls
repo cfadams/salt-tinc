@@ -87,7 +87,6 @@ bird_conf:
       - '     {{ network }};'
       {% endfor %}
       - '   };'
-      {% endif %}
       {% for interface in tinc['service']['ospf']['listen-interfaces'] %}
       - '   interface "{{ interface }}" {'
       - '     hello 9;'
