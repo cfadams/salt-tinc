@@ -25,7 +25,7 @@ tinc_repo:
 tinc_install:
   pkg.latest:
     - refresh: True
-    {% if nodetype = "master" %}
+    {% if nodetype == "master" %}
     - pkgs: {{tinc['packages-master']}}
     {% else %}
     - pkgs: {{tinc['packages']}}
