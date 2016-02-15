@@ -137,6 +137,11 @@ tinc_bird-config:
     - group: root
     - mode: 644
     - template: jinja
+    - context
+    tinc: {{ tinc }}
+    host: {{ master }}
+    network: {{ network }}
+
 {% endif %}
 {% endif %}
 
