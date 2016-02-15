@@ -9,4 +9,4 @@ protocol device {
  scan time 10;
 }
 
-include "/etc/bird/bird.conf.d/*.conf";
+include "/etc/bird.conf.d/*.conf";
