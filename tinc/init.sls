@@ -131,14 +131,14 @@ tinc_bird:
 {% endif %}
 tinc_bird-confdir:
   file.directory:
-    - name: /etc/bird.d/
+    - name: /etc/bird.conf.d/
     - user: root
     - group: root
     - mode: 755
     - makedirs: True
 tinc_bird-config:
   file.managed:
-    - name: /etc/bird.d/tinc.conf
+    - name: /etc/bird.conf.d/tinc.conf
     - source: salt://tinc/config/bird/tinc.conf.tpl
     - user: root
     - group: root
