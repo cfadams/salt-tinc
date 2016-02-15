@@ -139,9 +139,6 @@ tinc_bird-config:
     - template: jinja
     - context
     tinc: {{ tinc }}
-    host: {{ master }}
-    network: {{ network }}
-
 {% endif %}
 {% endif %}
 
