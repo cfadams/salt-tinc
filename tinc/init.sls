@@ -138,7 +138,7 @@ tinc_bird-config:
     - mode: 644
     - template: jinja
     - context
-    tinc: {{ tinc }}
+      tinc: {{ tinc }}
 {% endif %}
 {% endif %}
 
