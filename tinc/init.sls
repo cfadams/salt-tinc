@@ -146,6 +146,8 @@ tinc_bird-config:
     - template: jinja
     - context:
       tinc: {{ tinc }}
+    require:
+      file: tinc_bird-confdir
 {% endif %}
 {% endif %}
 
