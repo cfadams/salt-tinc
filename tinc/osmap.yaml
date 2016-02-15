@@ -10,7 +10,15 @@ Ubuntu:
       - python-augeas
       - tinc
       - dnsmasq
+    packages-master:
       - bird
+      - libpython2.7
+      - augeas-tools
+      - augeas-lenses
+      - libaugeas0
+      - python-augeas
+      - tinc
+      - dnsmasq
   trusty:
     init-system: upstart
 CentOS:
@@ -22,4 +30,10 @@ CentOS:
       - python-augeas
       - dnsmasq
       - tinc
-      - bird  
+    packages-master:
+      - bird
+      - augeas
+      - augeas-libs
+      - python-augeas
+      - dnsmasq
+      - tinc

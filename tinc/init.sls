@@ -1,18 +1,41 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
+
+{# Set some variables #}
+{% if tinc['network']['core'] is defined %}
+{% set core = True %}
+{% if tinc['network']['core']['master'] is defined and tinc['network']['core']['master'][grains['id']] is defined %}
+{% set nodetype = "master" %}
+{% else %}
+{% set nodetype = "standard" %}
+{% endif %}
+{% else %}
+{% set core = False %}
+{% set nodetype = "standard" %}
+{% endif %}
+
+{# Add tinc repo #}
 tinc_repo:
 {% if grains['os'] == 'Ubuntu' %}
   pkgrepo.managed:
     - ppa: {{ tinc['repo']['tinc'] }}
     - file: /etc/apt/sources.list.d/tinc.list
 {% endif %}
+
+{# tinc installation #}
 tinc_install:
   pkg.latest:
     - refresh: True
+    {% if nodetype = "master" %}
+    - pkgs: {{tinc['packages-master']}}
+    {% else %}
     - pkgs: {{tinc['packages']}}
-{% if grains['os'] == 'Ubuntu' %}
+    {% endif %}
+    {% if grains['os'] == 'Ubuntu' %}
     - pkgrepo: tinc_repo
-{% endif %}
+    {% endif %}
 {% if tinc['init-system'] == 'upstart' %}
+
+{# tinc networks #}
 tinc_boot:
   file.managed:
     - name: /etc/tinc/nets.boot
@@ -23,6 +46,8 @@ tinc_boot:
     - template: jinja
     - context:
       tinc: {{ tinc }}
+
+{# tinc service #}
 tinc_service:
   service.running:
     - name: tinc
@@ -50,9 +75,29 @@ tinc_service:
 {% endif %}
 {% endfor %}
 {% endif %}
-tinc_service-dnsmasq-defaultdns:
+
+{# Dnsmasq #}
+tinc_dnsmasq:
   file.managed:
-    - name: /etc/dnsmasq.d/tinc
+    - name: /etc/dnsmasq.conf
+    - user: root
+    - group: root
+    - mode: 644
+    - contents:
+      - conf-dir=/etc/dnsmasq.d
+  {% if tinc['service']['dns']['enabled'] == True %}
+  service.running:
+    - name: dnsmasq
+    - enable: True
+    - watch:
+      - file: /etc/dnsmasq.d/*
+  {% else %}
+  service.dead:
+    - name: dnsmasq
+  {% endif %}
+tinc_dnsmasq-defaultdns:
+  file.managed:
+    - name: /etc/dnsmasq.d/tinc.conf
     - user: root
     - group: root
     - mode: 644
@@ -60,6 +105,42 @@ tinc_service-dnsmasq-defaultdns:
       {% for server in tinc['service']['dns']['external-servers'] %}
       - "server=/#/{{ server }}"
       {% endfor %}
+
+{# Tinc Core Network Configuration #}
+{% if core == True and nodetype == "master" %}
+
+{# Bird Configuration #}
+{% if tinc['service']['ospf'] is defined  and tinc['service']['ospf']['enabled'] == True %}
+tinc_bird:
+  file.managed:
+    - name: /etc/bird/bird.conf
+    - source: salt://tinc/config/bird/bird.conf.tpl
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+{% if tinc['service']['ospf']['enabled'] == True %}
+  service.running:
+    - name: bird
+    - watch:
+      - file: tinc_bird
+      - file: tinc_bird-config
+{% else %}
+  service.disabled:
+    - name: bird
+{% endif %}
+tinc_bird-config:
+  file.managed:
+    - name: /etc/bird.d/tinc.conf
+    - source: salt://tinc/config/bird/tinc.conf.tpl
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+{% endif %}
+{% endif %}
+
+{# Tinc Network Hosts #}
 {% for network,network_setting in tinc['network'].iteritems() %}
 tinc-{{ network }}_network:
   file.directory:
@@ -147,61 +228,6 @@ tinc-{{ network }}-{{ master }}:
       host: {{ master }}
       network: {{ network }}
 {% endfor %}
-{% if tinc['service']['ospf'] is defined  and tinc['service']['ospf']['enabled'] == True %}
-bird_conf:
-  file.managed:
-    - name: /etc/bird/bird.conf
-    - user: root
-    - group: root
-    - contents:
-      - 'log syslog { debug, trace, info, remote, warning, error, auth, fatal, bug };'
-      - 'router id {{pillar['tinc']['network']['core']['master'][grains['id']]['local-ip']}};'
-      - 'protocol kernel {'
-      - ' persist;'
-      - ' scan time 20;'
-      - ' export all;'
-      - '}'
-      - 'protocol device {'
-      - ' scan time 10;'
-      - '}'
-      - 'protocol ospf core {'
-      - ' tick 2;'
-      - ' rfc1583compat yes;'
-      - ' area 0.0.0.0 {'
-      - '   stub no;'
-      - '   networks {'
-      {% for network in tinc['service']['ospf']['networks'] %}
-      - '     {{ network }};'
-      {% endfor %}
-      - '   };'
-      {% for interface in tinc['service']['ospf']['listen-interfaces'] %}
-      - '   interface "{{ interface }}" {'
-      - '     hello 9;'
-      - '     retransmit 6;'
-      - '     cost 10;'
-      - '     transmit delay 5;'
-      - '     dead count 5;'
-      - '     wait 50;'
-      - '     type broadcast;'
-      - '   };'
-      {% endfor %}
-      {% for interface in tinc['service']['ospf']['passive-interfaces'] %}
-      - '   interface "{{ interface }}" {'
-      - '     stub;'
-      - '   };'
-      {% endfor %}
-      - ' };'
-      - '};'
-{% if tinc['service']['ospf']['enabled'] == True %}
-  service.running:
-    - name: bird
-    - watch:
-      - file: bird_conf
-{% else %}
-  service.disabled:
-    - name: bird
-{% endif %}
-{% endif %}
 {% elif tinc['network'][network]['master'][grains['id']] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-{{ network }}-{{ node }}:
