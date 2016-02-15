@@ -129,6 +129,13 @@ tinc_bird:
   service.disabled:
     - name: bird
 {% endif %}
+tinc_bird-confdir:
+  file.directory:
+    - name: /etc/bird.d/
+    - user: root
+    - group: root
+    - mode: 755
+    - makedirs: True
 tinc_bird-config:
   file.managed:
     - name: /etc/bird.d/tinc.conf
