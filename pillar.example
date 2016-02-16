@@ -10,12 +10,19 @@ tinc:
           - startledphoenixsrv
           - alinuxninjasrv
     ospf:
+      enabled: True
       common:
         listen-interfaces:
-          -
-      enabled: True
+          - core
+        networks: []
+        passive-interfaces: []
+      customhost:
+        networks:
+          - 172.16.11.0/24
+        passive-interfaces:
+          - eth1
   network:
-    ALinuxNinja-Servers:
+    core:
       subnet: 10.5.0.0/16
       port: 1160
       cipher: aes-128-cbc
@@ -27,9 +34,8 @@ tinc:
       master:
         cr02.startledphoenixsrv:
           public-ip: 192.168.2.1
-          scope:
-            start-ip: 10.5.1.0
-            end-ip: 10.5.1.0
+          local-ip: 10.5.1.10
       node:
         Vivian.remote.alinuxninjasrv:
           public-ip: 192.168.2.2
+          local-ip: 10.5.1.11

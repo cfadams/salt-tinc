@@ -222,24 +222,7 @@ tinc-{{ network }}_down:
     - user: root
     - group: root
     - mode: 755
-{% if network == "core" and tinc['network'][network]['master'][grains['id']] is defined %}
-{% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
-tinc-{{ network }}-{{ master }}:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ network }}/{{ master }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ master }}
-      network: {{ network }}
-{% endfor %}
-{% elif tinc['network'][network]['master'][grains['id']] is defined %}
+{% if tinc['network'][network]['master'][grains['id']] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-{{ network }}-{{ node }}:
   file.managed:
