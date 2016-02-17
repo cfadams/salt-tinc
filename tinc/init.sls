@@ -76,36 +76,6 @@ tinc_service:
 {% endfor %}
 {% endif %}
 
-{# Dnsmasq #}
-tinc_dnsmasq:
-  file.managed:
-    - name: /etc/dnsmasq.conf
-    - user: root
-    - group: root
-    - mode: 644
-    - contents:
-      - conf-dir=/etc/dnsmasq.d
-  {% if tinc['service']['dns']['enabled'] == True %}
-  service.running:
-    - name: dnsmasq
-    - enable: True
-    - watch:
-      - file: /etc/dnsmasq.d/*
-  {% else %}
-  service.dead:
-    - name: dnsmasq
-  {% endif %}
-tinc_dnsmasq-defaultdns:
-  file.managed:
-    - name: /etc/dnsmasq.d/tinc.conf
-    - user: root
-    - group: root
-    - mode: 644
-    - contents:
-      {% for server in tinc['service']['dns']['external-servers'] %}
-      - "server=/#/{{ server }}"
-      {% endfor %}
-
 {# Tinc Core Network Configuration #}
 {% if core == True and nodetype == "master" %}
 
@@ -150,6 +120,47 @@ tinc_bird-config:
       - file: tinc_bird-confdir
 {% endif %}
 {% endif %}
+
+{# Dnsmasq #}
+tinc_dnsmasq:
+  file.managed:
+    - name: /etc/dnsmasq.conf
+    - user: root
+    - group: root
+    - mode: 644
+    - contents:
+      - conf-dir=/etc/dnsmasq.d
+  {% if tinc['service']['dns']['enabled'] == True %}
+  service.running:
+    - name: dnsmasq
+    - enable: True
+    - watch:
+      - file: /etc/dnsmasq.d/*
+  {% else %}
+  service.dead:
+    - name: dnsmasq
+  {% endif %}
+tinc_dnsmasq-defaultdns:
+  file.managed:
+    - name: /etc/dnsmasq.d/tinc.conf
+    - user: root
+    - group: root
+    - mode: 644
+    - contents:
+      - "### File Managed by Salt"
+      - "### Management SLS: tinc"
+      {% for server in tinc['service']['dns']['external-servers'] %}
+      - "server=/#/{{ server }}"
+      {% endfor %}
+tinc_dnsmasq-hosts:
+  file.managed:
+    - name: /etc/dnsmasq.d/tinc_hosts.conf
+    - user: root
+    - group: root
+    - mode: 644
+    - contents:
+      - "### File Managed by Salt"
+      - "### Management SLS: tinc"
 
 {# Tinc Network Hosts #}
 {% for network,network_setting in tinc['network'].iteritems() %}
@@ -224,6 +235,12 @@ tinc-{{ network }}_down:
     - mode: 755
 {% if tinc['network'][network]['master'][grains['id']] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
+tinc_dnsmasq-{{network}}-{{ node }}:
+  file.append:
+    - text:
+      - "address=/node/{{ node_setting['local-ip'] }}"
+    - require_in:
+      - service: tinc_dnsmasq
 tinc-{{ network }}-{{ node }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
