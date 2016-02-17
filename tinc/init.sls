@@ -237,6 +237,7 @@ tinc-{{ network }}_down:
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc_dnsmasq-{{network}}-{{ node }}:
   file.append:
+    - name: /etc/dnsmasq.d/tinc_hosts.conf
     - text:
       - "address=/node/{{ node_setting['local-ip'] }}"
     - require_in:
