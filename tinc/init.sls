@@ -242,6 +242,8 @@ tinc_dnsmasq-{{network}}-{{ node }}:
       - "address=/{{ node }}/{{ node_setting['local-ip'] }}"
     - require_in:
       - service: tinc_dnsmasq
+    - require:
+      - file: tinc_dnsmasq-hosts
 tinc-{{ network }}-{{ node }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
