@@ -136,9 +136,25 @@ tinc_dnsmasq:
     - enable: True
     - watch:
       - file: /etc/dnsmasq.d/*
+tinc_resolv:
+  file.managed:
+    - name: /etc/resolv.conf
+    - user: root
+    - group: root
+    - contents:
+      - nameserver 127.0.0.1
   {% else %}
   service.dead:
     - name: dnsmasq
+tinc_resolv:
+  file.managed:
+    - name: /etc/resolv.conf
+    - user: root
+    - group: root
+    - contents:
+      {% for nameserver in tinc['service']['dns']['external-servers'] %}
+      - nameserver {{ nameserver }}
+      {% endfor %}
   {% endif %}
 tinc_dnsmasq-defaultdns:
   file.managed:
