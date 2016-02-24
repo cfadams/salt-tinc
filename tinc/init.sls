@@ -249,7 +249,7 @@ tinc-{{ network }}_down:
     - user: root
     - group: root
     - mode: 755
-{% if network == "core" and tinc['network'][core]['master'][grains['id']] is defined %}
+{% if network == "core" and tinc['network']['core']['master'][grains['id']] is defined %}
 {% for master,master_setting in tinc['network']['core']['master'].iteritems() %}
 tinc_dnsmasq-{{network}}-{{ master }}:
   file.append:
