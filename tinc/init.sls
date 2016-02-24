@@ -260,7 +260,7 @@ tinc_dnsmasq-{{network}}-{{ master }}:
       - service: tinc_dnsmasq
     - require:
       - file: tinc_dnsmasq-hosts
-tinc-{{ network }}-{{ master }}:
+tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
     - source: salt://secure/tinc/{{ network }}/{{ master }}/host
