@@ -249,7 +249,33 @@ tinc-{{ network }}_down:
     - user: root
     - group: root
     - mode: 755
-{% if tinc['network'][network]['master'][grains['id']] is defined %}
+{% if network == "core" and tinc['network'][core]['master'][grains['id']] is defined %}
+{% for master,master_setting in tinc['network']['core']['master'].iteritems() %}
+tinc_dnsmasq-{{network}}-{{ master }}:
+  file.append:
+    - name: /etc/dnsmasq.d/tinc_hosts.conf
+    - text:
+      - "address=/{{ node }}/{{ node_setting['local-ip'] }}"
+    - require_in:
+      - service: tinc_dnsmasq
+    - require:
+      - file: tinc_dnsmasq-hosts
+tinc-{{ network }}-{{ master }}:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
+    - source: salt://secure/tinc/{{ network }}/{{ master }}/host
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
+    - context:
+      tinc: {{ tinc }}
+      host: {{ master }}
+      network: {{ network }}
+{% endfor %}
+{% elif tinc['network'][network]['master'][grains['id']] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc_dnsmasq-{{network}}-{{ node }}:
   file.append:
