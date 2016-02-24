@@ -255,7 +255,7 @@ tinc_dnsmasq-{{network}}-{{ master }}:
   file.append:
     - name: /etc/dnsmasq.d/tinc_hosts.conf
     - text:
-      - "address=/{{ node }}/{{ node_setting['local-ip'] }}"
+      - "address=/{{ master }}/{{ master_setting['local-ip'] }}"
     - require_in:
       - service: tinc_dnsmasq
     - require:
