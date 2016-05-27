@@ -205,21 +205,21 @@ tinc-{{ network }}_config:
 tinc-{{ network }}_{{ grains['id'] }}-privkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.priv
-    - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/rsa_key.priv
+    - source: salt://secure/tinc/{{ grains['id'] }}/rsa_key.priv
     - user: root
     - group: root
     - mode: 644
 tinc-{{ network }}_{{ grains['id'] }}-pubkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.pub
-    - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/rsa_key.pub
+    - source: salt://secure/tinc/{{ grains['id'] }}/rsa_key.pub
     - user: root
     - group: root
     - mode: 644
 tinc-{{ network }}_{{ grains['id'] }}-config:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ network }}/{{ grains['id'] }}/host
+    - source: salt://secure/tinc/{{ grains['id'] }}/host
     - user: root
     - group: root
     - mode: 644
@@ -263,7 +263,7 @@ tinc_dnsmasq-{{network}}-{{ master }}:
 tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ network }}/{{ master }}/host
+    - source: salt://secure/tinc/{{ master }}/host
     - user: root
     - group: root
     - mode: 644
@@ -289,7 +289,7 @@ tinc_dnsmasq-{{network}}-{{ node }}:
 tinc-{{ network }}-{{ node }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ network }}/{{ node }}/host
+    - source: salt://secure/tinc/{{ node }}/host
     - user: root
     - group: root
     - mode: 644
@@ -306,7 +306,7 @@ tinc-{{ network }}-{{ node }}:
 tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ network }}/{{ master }}/host
+    - source: salt://secure/tinc/{{ master }}/host
     - user: root
     - group: root
     - mode: 644
