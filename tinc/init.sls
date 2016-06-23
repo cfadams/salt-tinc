@@ -80,6 +80,11 @@ tinc_service-{{ network }}:
 
 {# Tinc Network Hosts #}
 {% for network,network_setting in tinc['network'].iteritems() %}
+{% if network_setting['master'] is defined and network_setting['master'][grains['id']] is defined %}
+{% set nodetype = "master" %}
+{% else %}
+{% set nodetype = "node" %}
+{% endif %}
 tinc-{{ network }}_network:
   file.directory:
     - name: /etc/tinc/{{ network }}/hosts
@@ -102,6 +107,7 @@ tinc-{{ network }}_config:
       tinc: {{ tinc }}
       host: {{ grains['id'] }}
       network: {{ network }}
+      nodetype: {{ nodetype }}
 tinc-{{ network }}_{{ grains['id'] }}-privkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.priv
@@ -142,6 +148,7 @@ tinc-{{ network }}_up:
       tinc: {{ tinc }}
       network: {{ network }}
       node: {{ grains['id'] }}
+      nodetype: {{ nodetype }}
 tinc-{{ network }}_down:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc-down
@@ -149,8 +156,7 @@ tinc-{{ network }}_down:
     - user: root
     - group: root
     - mode: 755
-{% if tinc['network'][network]['master'] is defined %}
-{% if tinc['network'][network]['master'][grains['id']] is defined %}
+{% if nodetype == "master" %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-{{ network }}-{{ node }}:
   file.managed:
@@ -166,8 +172,9 @@ tinc-{{ network }}-{{ node }}:
       tinc: {{ tinc }}
       host: {{ node }}
       network: {{ network }}
+      nodetype: {{ nodetype }}
 {% endfor %}
-{% elif tinc['network'][network]['node'][grains['id']] is defined %}
+{% elif nodetype == "node" and tinc['network']['master'] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
 tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
   file.managed:
@@ -183,8 +190,8 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
       tinc: {{ tinc }}
       host: {{ master }}
       network: {{ network }}
+      nodetype: {{ nodetype }}
 {% endfor %}
-{% endif %}
 {% else %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 {% if node != grains['id'] %}
@@ -202,6 +209,7 @@ tinc-{{ network }}-{{ node }}:
       tinc: {{ tinc }}
       host: {{ node }}
       network: {{ network }}
+      nodetype: {{ nodetype }}
 {% endif %}
 {% endfor %}
 {% endif %}

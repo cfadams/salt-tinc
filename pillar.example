@@ -1,27 +1,26 @@
 tinc:
   service:
-    dns:
-      common:
-        enabled: True
-        external-servers:
-          - 8.8.8.8
-          - 8.8.4.4
-        internal-domains:
-          - startledphoenixsrv
-          - alinuxninjasrv
     tinc:
       common:
         enabled: True
   network:
-    core:
+    mynet:
       subnet: 10.5.0.0/16
       port: 1160
-      cipher: aes-128-cbc
+      conf:
+      # See options from https://www.tinc-vpn.org/documentation/tinc.conf.5
+      # Name, BindToAddress, and ConnectTo values are fixed and predefined
+        AddressFamily: "any"
+        Mode: "switch"
+      host-option: 
+      # See options from https://www.tinc-vpn.org/documentation/Host-configuration-variables.html
+      # Address is predefined
+      # Port and Subnet are required
+        Cipher: aes-128-cbc
+        Compression: 0
+        Port: 1160
       compression: 10
       digest: sha1
-      dns-servers:
-        - 8.8.8.8
-        - 8.8.4.4
       master:
         cr02.startledphoenixsrv:
           public-ip: 192.168.2.1
