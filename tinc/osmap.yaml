@@ -1,17 +1,6 @@
 Ubuntu:
   common:
-    repo:
-      tinc: "alinuxninja/tinc"
     packages:
-      - libpython2.7
-      - augeas-tools
-      - augeas-lenses
-      - libaugeas0
-      - python-augeas
-      - tinc
-      - dnsmasq
-    packages-master:
-      - bird
       - libpython2.7
       - augeas-tools
       - augeas-lenses
@@ -20,20 +9,47 @@ Ubuntu:
       - tinc
       - dnsmasq
   trusty:
+    repo:
+      tinc:
+        url: "http://download.opensuse.org/repositories/home:/alinuxninja:/tinc/xUbuntu_14.04/ /"
+        key: "http://download.opensuse.org/repositories/home:alinuxninja:tinc/xUbuntu_14.04/Release.key"
     init-system: upstart
-CentOS:
-  7:
+  xenial:
+    repo:
+      tinc:
+        url: "http://download.opensuse.org/repositories/home:/alinuxninja:/tinc/xUbuntu_16.04/ /"
+        key: "http://download.opensuse.org/repositories/home:alinuxninja:tinc/xUbuntu_16.04/Release.key"
     init-system: systemd
+Debian:
+  wheezy:
+    repo:
+      tinc:
+        url: "http://download.opensuse.org/repositories/home:/alinuxninja:/tinc/Debian_7.0/ /"
+        key: "http://download.opensuse.org/repositories/home:alinuxninja:tinc/Debian_7.0/Release.key"
+    init-system: sysv
+  jessie:
+    repo:
+      tinc:
+        url: "http://download.opensuse.org/repositories/home:/alinuxninja:/tinc/Debian_8.0/ /"
+        key: "http://download.opensuse.org/repositories/home:alinuxninja:tinc/Debian_8.0/Release.key"
+    init-system: systemd
+CentOS:
+  common:
     packages:
       - augeas
       - augeas-libs
       - python-augeas
       - dnsmasq
       - tinc
-    packages-master:
-      - bird
-      - augeas
-      - augeas-libs
-      - python-augeas
-      - dnsmasq
-      - tinc
+  "7":
+    repo:
+      tinc:
+        url: http://download.opensuse.org/repositories/home:alinuxninja:tinc/CentOS_7/home:alinuxninja:tinc.repo
+        hash: 6aea39d28ebd69917c084472140607a4e77dd83ebcd6bb549e401da8227e99a73c18b2758cd58360c205633a7d0e0fb5a4f8f52a0e42a7edee378804eeffdee6
+    init-system: systemd
+  "6":
+    repo:
+      tinc:
+        url: http://download.opensuse.org/repositories/home:alinuxninja:tinc/CentOS_6/home:alinuxninja:tinc.repo
+        hash: 530b75855195bdf92a4ff1cd3b3be2431d20e38ba4075a09d58158d9d6ff6f8b061ef2961d94dac25ce50e484189a6a2260a2a937c6ce1f6874a3f695424f618
+    init-system: sysv

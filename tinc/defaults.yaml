@@ -1,14 +1,6 @@
 tinc:
   network: {}
   service:
-    dns:
+    tinc:
       common:
-        enabled: False
-        internal-domains: []
-        external-servers: []
-    ospf:
-      common:
-        common:
-          listen-interfaces: []
-          passive-interfaces: []
-          networks: []
+        enabled: True

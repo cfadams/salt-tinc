@@ -9,18 +9,9 @@ tinc:
         internal-domains:
           - startledphoenixsrv
           - alinuxninjasrv
-    ospf:
-      enabled: True
+    tinc:
       common:
-        listen-interfaces:
-          - core
-        networks: []
-        passive-interfaces: []
-      customhost:
-        networks:
-          - 172.16.11.0/24
-        passive-interfaces:
-          - eth1
+        enabled: True
   network:
     core:
       subnet: 10.5.0.0/16

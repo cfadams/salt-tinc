@@ -1,41 +1,35 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
 
-{# Set some variables #}
-{% if tinc['network']['core'] is defined %}
-{% set core = True %}
-{% if tinc['network']['core']['master'] is defined and tinc['network']['core']['master'][grains['id']] is defined %}
-{% set nodetype = "master" %}
-{% else %}
-{% set nodetype = "standard" %}
-{% endif %}
-{% else %}
-{% set core = False %}
-{% set nodetype = "standard" %}
-{% endif %}
-
 {# Add tinc repo #}
 tinc_repo:
 {% if grains['os'] == 'Ubuntu' %}
   pkgrepo.managed:
-    - ppa: {{ tinc['repo']['tinc'] }}
+    - humanname: Tinc-VPN
+    - name: deb {{ tinc['repo']['tinc']['url'] }}
     - file: /etc/apt/sources.list.d/tinc.list
+    - key_url: {{ tinc['repo']['tinc']['key'] }}
+{% elif grains['os'] == 'Debian' %}
+  pkgrepo.managed:
+    - humanname: Tinc VPN
+    - name: deb {{ tinc['repo']['tinc']['url'] }}
+    - file: /etc/apt/sources.list.d/tinc.list
+    - key_url: {{ tinc['repo']['tinc']['key'] }}
+{% elif grains['os'] == 'CentOS' %}
+  file.managed:
+    - name: /etc/yum.repos.d/tinc.repo
+    - source: {{ tinc['repo']['tinc']['url'] }}
+    - source_hash: sha512={ tinc['repo']['tinc']['hash'] }}
 {% endif %}
 
 {# tinc installation #}
 tinc_install:
   pkg.latest:
     - refresh: True
-    {% if nodetype == "master" %}
-    - pkgs: {{tinc['packages-master']}}
-    {% else %}
-    - pkgs: {{tinc['packages']}}
-    {% endif %}
-    {% if grains['os'] == 'Ubuntu' %}
+    - pkgs: {{ tinc['packages'] }}
     - pkgrepo: tinc_repo
-    {% endif %}
-{% if tinc['init-system'] == 'upstart' %}
 
-{# tinc networks #}
+{# upstart init #}
+{% if tinc['init-system'] == 'upstart' %}
 tinc_boot:
   file.managed:
     - name: /etc/tinc/nets.boot
@@ -48,6 +42,7 @@ tinc_boot:
       tinc: {{ tinc }}
 
 {# tinc service #}
+{% if tinc['service']['tinc']['enabled'] == True %}
 tinc_service:
   service.running:
     - name: tinc
@@ -57,126 +52,31 @@ tinc_service:
       - file: /etc/tinc/{{ network }}/*
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endfor %}
+{% elif tinc['service']['tinc']['enabled'] == False %}
+tinc_service:
+  service.dead:
+    - name: tinc
+    - enable: False
 {% endif %}
+{% endif %}
+
+{# systemd init #}
 {% if tinc['init-system'] == 'systemd' %}
+tinc_service:
+  service.disabled:
+    - name: tinc
+{% if tinc['service']['tinc']['enabled'] == True %}
 {% for network, network_setting in tinc['network'].iteritems() %}
-{% if network_setting['node'][grains['id']] is defined or network_setting['master'][grains['id']] is defined %}
 tinc_service-{{ network }}:
   service.running:
-    - name: tincd@{{ network }}
+    - name: tinc@{{ network }}
     - enable: True
     - watch:
       - file: /etc/tinc/{{ network }}/*
       - file: /etc/tinc/{{ network }}/hosts/*
-{% else %}
-tinc_service:
-  service.disabled:
-    - name: tinc@{{ network }}
-{% endif %}
 {% endfor %}
 {% endif %}
-
-{# Tinc Core Network Configuration #}
-{% if core == True and nodetype == "master" %}
-
-{# Bird Configuration #}
-{% if tinc['service']['ospf'] is defined  and tinc['service']['ospf']['enabled'] == True %}
-tinc_bird:
-  file.managed:
-    - name: /etc/bird/bird.conf
-    - source: salt://tinc/config/bird/bird.conf.tpl
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-{% if tinc['service']['ospf']['enabled'] == True %}
-  service.running:
-    - name: bird
-    - watch:
-      - file: tinc_bird
-      - file: tinc_bird-config
-{% else %}
-  service.disabled:
-    - name: bird
 {% endif %}
-tinc_bird-confdir:
-  file.directory:
-    - name: /etc/bird/conf.d/
-    - user: root
-    - group: root
-    - mode: 755
-    - makedirs: True
-tinc_bird-config:
-  file.managed:
-    - name: /etc/bird/conf.d/tinc.conf
-    - source: salt://tinc/config/bird/tinc.conf.tpl
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - context:
-      tinc: {{ tinc }}
-    - require:
-      - file: tinc_bird-confdir
-{% endif %}
-{% endif %}
-
-{# Dnsmasq #}
-tinc_dnsmasq:
-  file.managed:
-    - name: /etc/dnsmasq.conf
-    - user: root
-    - group: root
-    - mode: 644
-    - contents:
-      - conf-dir=/etc/dnsmasq.d
-  {% if tinc['service']['dns']['enabled'] == True %}
-  service.running:
-    - name: dnsmasq
-    - enable: True
-    - watch:
-      - file: /etc/dnsmasq.d/*
-tinc_resolv:
-  file.managed:
-    - name: /etc/resolv.conf
-    - user: root
-    - group: root
-    - contents:
-      - nameserver 127.0.0.1
-  {% else %}
-  service.dead:
-    - name: dnsmasq
-tinc_resolv:
-  file.managed:
-    - name: /etc/resolv.conf
-    - user: root
-    - group: root
-    - contents:
-      {% for nameserver in tinc['service']['dns']['external-servers'] %}
-      - nameserver {{ nameserver }}
-      {% endfor %}
-  {% endif %}
-tinc_dnsmasq-defaultdns:
-  file.managed:
-    - name: /etc/dnsmasq.d/tinc.conf
-    - user: root
-    - group: root
-    - mode: 644
-    - contents:
-      - "### File Managed by Salt"
-      - "### Management SLS: tinc"
-      {% for server in tinc['service']['dns']['external-servers'] %}
-      - "server=/#/{{ server }}"
-      {% endfor %}
-tinc_dnsmasq-hosts:
-  file.managed:
-    - name: /etc/dnsmasq.d/tinc_hosts.conf
-    - user: root
-    - group: root
-    - mode: 644
-    - contents:
-      - "### File Managed by Salt"
-      - "### Management SLS: tinc"
 
 {# Tinc Network Hosts #}
 {% for network,network_setting in tinc['network'].iteritems() %}
@@ -249,43 +149,9 @@ tinc-{{ network }}_down:
     - user: root
     - group: root
     - mode: 755
-{% if network == "core" and tinc['network']['core']['master'][grains['id']] is defined %}
-{% for master,master_setting in tinc['network']['core']['master'].iteritems() %}
-tinc_dnsmasq-{{network}}-{{ master }}:
-  file.append:
-    - name: /etc/dnsmasq.d/tinc_hosts.conf
-    - text:
-      - "address=/{{ master }}/{{ master_setting['local-ip'] }}"
-    - require_in:
-      - service: tinc_dnsmasq
-    - require:
-      - file: tinc_dnsmasq-hosts
-tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ master }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ master }}
-      network: {{ network }}
-{% endfor %}
-{% elif tinc['network'][network]['master'][grains['id']] is defined %}
+{% if tinc['network'][network]['master'] is defined %}
+{% if tinc['network'][network]['master'][grains['id']] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
-tinc_dnsmasq-{{network}}-{{ node }}:
-  file.append:
-    - name: /etc/dnsmasq.d/tinc_hosts.conf
-    - text:
-      - "address=/{{ node }}/{{ node_setting['local-ip'] }}"
-    - require_in:
-      - service: tinc_dnsmasq
-    - require:
-      - file: tinc_dnsmasq-hosts
 tinc-{{ network }}-{{ node }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
@@ -317,6 +183,26 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
       tinc: {{ tinc }}
       host: {{ master }}
       network: {{ network }}
+{% endfor %}
+{% endif %}
+{% else %}
+{% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
+{% if node != grains['id'] %}
+tinc-{{ network }}-{{ node }}:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
+    - source: salt://secure/tinc/{{ node }}/host
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
+    - context:
+      tinc: {{ tinc }}
+      host: {{ node }}
+      network: {{ network }}
+{% endif %}
 {% endfor %}
 {% endif %}
 {% endfor %}
