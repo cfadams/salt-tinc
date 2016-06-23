@@ -11,6 +11,7 @@ Currently extremely experimental and still under development
 
 ## Supports
 - Ubuntu 14.04
+- Centos 7
 
 ## Setup
 1. Add the formula to the salt master via gitfs
