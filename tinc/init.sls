@@ -111,21 +111,21 @@ tinc-{{ network }}_config:
 tinc-{{ network }}_{{ grains['id'] }}-privkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.priv
-    - source: salt://secure/tinc/{{ grains['id'] }}/rsa_key.priv
+    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/rsa_key.priv
     - user: root
     - group: root
     - mode: 644
 tinc-{{ network }}_{{ grains['id'] }}-pubkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.pub
-    - source: salt://secure/tinc/{{ grains['id'] }}/rsa_key.pub
+    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/rsa_key.pub
     - user: root
     - group: root
     - mode: 644
 tinc-{{ network }}_{{ grains['id'] }}-config:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ grains['id'] }}/host
+    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/host
     - user: root
     - group: root
     - mode: 644
@@ -161,7 +161,7 @@ tinc-{{ network }}_down:
 tinc-{{ network }}-{{ node }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ node }}/host
+    - source: {{ tinc['certpath'] }}/{{ node }}/host
     - user: root
     - group: root
     - mode: 644
@@ -179,7 +179,7 @@ tinc-{{ network }}-{{ node }}:
 tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ master }}/host
+    - source: {{ tinc['certpath'] }}/{{ master }}/host
     - user: root
     - group: root
     - mode: 644
@@ -198,7 +198,7 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
 tinc-{{ network }}-{{ node }}:
   file.managed:
     - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
-    - source: salt://secure/tinc/{{ node }}/host
+    - source: {{ tinc['certpath'] }}/{{ node }}/host
     - user: root
     - group: root
     - mode: 644
