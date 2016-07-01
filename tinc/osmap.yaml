@@ -19,7 +19,7 @@ Ubuntu:
       tinc:
         url: "http://download.opensuse.org/repositories/home:/alinuxninja:/tinc/xUbuntu_16.04/ /"
         key: "http://download.opensuse.org/repositories/home:alinuxninja:tinc/xUbuntu_16.04/Release.key"
-    init-system: systemd
+    init-system: sysv
 Debian:
   wheezy:
     repo:

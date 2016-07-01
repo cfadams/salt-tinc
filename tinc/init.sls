@@ -28,8 +28,8 @@ tinc_install:
     - pkgs: {{ tinc['packages'] }}
     - pkgrepo: tinc_repo
 
-{# upstart init #}
-{% if tinc['init-system'] == 'upstart' %}
+{# upstart/sysv init #}
+{% if tinc['init-system'] == 'upstart' or tinc['init-system'] == 'sysv' %}
 tinc_boot:
   file.managed:
     - name: /etc/tinc/nets.boot

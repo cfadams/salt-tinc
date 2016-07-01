@@ -25,6 +25,9 @@ tinc:
         cr02.startledphoenixsrv:
           public-ip: 192.168.2.1
           local-ip: 10.5.1.10
+          # host-option/conf can be specified in here as well for just a particular host instead of a whole network
+          host-option:
+            Cipher: aes-128-cbc
       node:
         Vivian.remote.alinuxninjasrv:
           public-ip: 192.168.2.2

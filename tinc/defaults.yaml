@@ -1,4 +1,5 @@
 tinc:
+  certpath: "/srv/salt/secure/tinc"
   network: {}
   service:
     tinc:

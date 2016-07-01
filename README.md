@@ -10,8 +10,10 @@ Currently extremely experimental and still under development
 - [salt-tinc-genkeys](https://github.com/ALinuxNinja/salt-tinc-genkeys)
 
 ## Supports
+- Ubuntu 16.04
 - Ubuntu 14.04
 - Centos 7
+- Centos 6
 
 ## Setup
 1. Add the formula to the salt master via gitfs
