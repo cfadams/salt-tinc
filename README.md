@@ -1,13 +1,13 @@
 ## salt-tinc
 A salt formula for [tinc](http://tinc-vpn.org)
 
-The setup works by connecting "nodes" (servers) to "masters", which allow for all the servers to mesh. Nodes will be resolved via a DNS server on the "masters" to allow for name resolution. "masters" will be joined via their own tinc link, and will use OSPF to join together.
+The setup works by creating a full VPN mesh between configured nodes. Also supports configuration by adding nodes to 'master nodes' which allow for tinc to be meshed by adding keys to the 'master nodes'
 
 Currently extremely experimental and still under development
 
 ## Requirements
 
-* Tinc 1.0+
+* Supported Linux Distribution (See Below)
 * [salt-tinc-genkeys](https://github.com/ALinuxNinja/salt-tinc-genkeys)
 
 ## Supports
