@@ -18,6 +18,7 @@ Currently extremely experimental and still under development
 * Centos 6
 
 ## Setup
+
 1. Fork the repository
 2. Add the formula to the salt master via gitfs
 3. Create pillar based on pillar.example
