@@ -3,7 +3,7 @@ A salt formula for [tinc](http://tinc-vpn.org)
 
 The setup works by creating a full VPN mesh between configured nodes. Also supports configuration by adding nodes to 'master nodes' which allow for tinc to be meshed by adding keys to the 'master nodes'
 
-Currently experimental, test before using
+Currently experimental, test before using.
 
 ## Requirements
 
