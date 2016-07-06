@@ -16,8 +16,9 @@ Currently extremely experimental and still under development
 - Centos 6
 
 ## Setup
-1. Add the formula to the salt master via gitfs
-2. Create pillar based on pillar.example
-3. Create /srv/salt/secure/tinc
-4. To create a network, clone [salt-tinc-genkeys](https://github.com/ALinuxNinja/salt-tinc-genkeys) to /srv/salt/secure/tinc
-5. Create a salt-reactor to generate the certs (Example: reactor.sls)
+1. Fork the repository
+2. Add the formula to the salt master via gitfs
+3. Create pillar based on pillar.example
+4. Create /srv/salt/secure/tinc
+5. To create a network, clone [salt-tinc-genkeys](https://github.com/ALinuxNinja/salt-tinc-genkeys) to /srv/salt/secure/tinc
+6. Create a salt-reactor to generate the certs (Example: reactor.sls)

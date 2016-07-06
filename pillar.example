@@ -8,26 +8,26 @@ tinc:
       subnet: 10.5.0.0/16
       port: 1160
       conf:
-      # See options from https://www.tinc-vpn.org/documentation/tinc.conf.5
-      # Name, BindToAddress, and ConnectTo values are fixed and predefined
-        AddressFamily: "any"
-        Mode: "switch"
-      host-option: 
-      # See options from https://www.tinc-vpn.org/documentation/Host-configuration-variables.html
-      # Address is predefined
-      # Port and Subnet are required
-        Cipher: aes-128-cbc
-        Compression: 0
-        Port: 1160
-      compression: 10
-      digest: sha1
+        local:
+          # See options from https://www.tinc-vpn.org/documentation/tinc.conf.5
+          # Name, BindToAddress, and ConnectTo values are fixed and predefined
+          AddressFamily: "any"
+          Mode: "switch"
+        host: 
+          # See options from https://www.tinc-vpn.org/documentation/Host-configuration-variables.html
+          # Address is predefined
+          # Port and Subnet are required
+          Cipher: aes-128-cbc
+          Compression: 0
+          Port: 1160
       master:
         cr02.startledphoenixsrv:
           public-ip: 192.168.2.1
           local-ip: 10.5.1.10
-          # host-option/conf can be specified in here as well for just a particular host instead of a whole network
-          host-option:
-            Cipher: aes-128-cbc
+          conf:
+            host:
+              # host configuration can be specified in here as well for just a particular host instead of a whole network
+              Cipher: aes-128-cbc
       node:
         Vivian.remote.alinuxninjasrv:
           public-ip: 192.168.2.2
