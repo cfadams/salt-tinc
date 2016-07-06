@@ -1,5 +1,5 @@
 ## salt-tinc
-A salt formula for tinc
+A salt formula for [tinc](http://tinc-vpn.org)
 
 The setup works by connecting "nodes" (servers) to "masters", which allow for all the servers to mesh. Nodes will be resolved via a DNS server on the "masters" to allow for name resolution. "masters" will be joined via their own tinc link, and will use OSPF to join together.
 
