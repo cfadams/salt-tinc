@@ -5,21 +5,20 @@ tinc:
         enabled: True
   network:
     mynet:
-      subnet: 10.5.0.0/16
-      port: 1160
       conf:
         local:
           # See options from https://www.tinc-vpn.org/documentation/tinc.conf.5
-          # Name, BindToAddress, and ConnectTo values are fixed and predefined
+          # Name and ConnectTo values are fixed and predefined
           AddressFamily: "any"
           Mode: "switch"
-        host: 
+        host:
           # See options from https://www.tinc-vpn.org/documentation/Host-configuration-variables.html
           # Address is predefined
           # Port and Subnet are required
           Cipher: aes-128-cbc
           Compression: 0
           Port: 1160
+          Subnet: 10.5.0.0/16
       master:
         cr02.startledphoenixsrv:
           public-ip: 192.168.2.1
