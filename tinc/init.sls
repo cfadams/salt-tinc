@@ -136,6 +136,7 @@ tinc-{{ network }}_{{ grains['id'] }}-config:
       tinc: {{ tinc }}
       host: {{ grains['id'] }}
       network: {{ network }}
+      nodetype: {{ nodetype }}
 tinc-{{ network }}_up:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc-up
