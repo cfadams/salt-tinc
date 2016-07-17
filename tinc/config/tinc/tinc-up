@@ -1,7 +1,3 @@
 #!/bin/sh
-ip addr add {%- if tinc['network'][network]['master'] is defined and tinc['network'][network]['master'][node] is defined -%}
-{{ " " + tinc['network'][network]['master'][node]['local-ip'] + "/" + tinc['network'][network]['subnet'].split('/')[1] + " " }}
-{%- else -%}
-{{ " " + tinc['network'][network]['node'][node]['local-ip'] + "/" + tinc['network'][network]['subnet'].split('/')[1] + " " }}
-{%- endif -%} dev $INTERFACE
+ip addr add {{ tinc['network'][network][nodetype][grains['id']]['public-ip'] }} + "/" + tinc['network'][network][nodetype][grains['id']]['subnet'].split('/')[1] + " " }} dev $INTERFACE
 ip link set $INTERFACE up
