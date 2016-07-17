@@ -174,7 +174,7 @@ tinc-{{ network }}-{{ node }}:
       network: {{ network }}
       nodetype: {{ nodetype }}
 {% endfor %}
-{% elif nodetype == "node" and tinc['network']['master'] is defined %}
+{% elif nodetype == "node" and tinc['network'][network]['master'] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
 tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
   file.managed:
