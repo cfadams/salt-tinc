@@ -174,7 +174,7 @@ tinc-{{ network }}-{{ node }}:
       tinc: {{ tinc }}
       host: {{ node }}
       network: {{ network }}
-      nodetype: {{ nodetype }}
+      nodetype: node
 {% endfor %}
 {% else %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
@@ -192,7 +192,7 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
       tinc: {{ tinc }}
       host: {{ master }}
       network: {{ network }}
-      nodetype: {{ nodetype }}
+      nodetype: master
 {% endfor %}
 {% endif %}
 {% elif nodetype == "node" %}
@@ -212,7 +212,7 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
       tinc: {{ tinc }}
       host: {{ master }}
       network: {{ network }}
-      nodetype: {{ nodetype }}
+      nodetype: master
 {% endfor %}
 {% else %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
@@ -231,7 +231,7 @@ tinc-{{ network }}-{{ node }}:
       tinc: {{ tinc }}
       host: {{ node }}
       network: {{ network }}
-      nodetype: {{ nodetype }}
+      nodetype: node
 {% endif %}
 {% endfor %}
 {% endif %}
