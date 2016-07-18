@@ -158,7 +158,7 @@ tinc-{{ network }}_down:
     - group: root
     - mode: 755
 {% if nodetype == "master" %}
-{% if tinc['network']['node'] is defined %}
+{% if tinc['network'][network]['node'] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-{{ network }}-{{ node }}:
   file.managed:
