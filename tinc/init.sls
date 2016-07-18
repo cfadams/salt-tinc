@@ -158,7 +158,6 @@ tinc-{{ network }}_down:
     - group: root
     - mode: 755
 {% if nodetype == "master" %}
-{% if tinc['network'][network]['node'] is defined %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 tinc-{{ network }}-{{ node }}:
   file.managed:
@@ -176,25 +175,6 @@ tinc-{{ network }}-{{ node }}:
       network: {{ network }}
       nodetype: node
 {% endfor %}
-{% else %}
-{% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
-tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
-    - source: {{ tinc['certpath'] }}/{{ master }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ master }}
-      network: {{ network }}
-      nodetype: master
-{% endfor %}
-{% endif %}
 {% elif nodetype == "node" %}
 {% if tinc['network'][network]['master'] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
