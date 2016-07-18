@@ -1,5 +1,5 @@
 #!/bin/sh
-ip addr add {{ tinc['network'][network][nodetype][grains['id']]['public-ip'] + "/" }}
+ip addr add {{ tinc['network'][network][nodetype][grains['id']]['local-ip'] + "/" }}
 {%- if tinc['network'][network][nodetype][grains['id']]['conf'] is defined and tinc['network'][network][nodetype][grains['id']]['conf']['host'] is defined and tinc['network'][network][nodetype][grains['id']]['conf']['host']['Subnet'] is defined -%}
 {{ tinc['network'][network][nodetype][grains['id']]['conf']['host']['Subnet'].split('/')[1] + " " }}
 {%- else -%}
