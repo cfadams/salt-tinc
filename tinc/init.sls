@@ -122,21 +122,6 @@ tinc-{{ network }}_{{ grains['id'] }}-pubkey:
     - user: root
     - group: root
     - mode: 644
-tinc-{{ network }}_{{ grains['id'] }}-config:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}
-    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ grains['id'] }}
-      network: {{ network }}
-      nodetype: {{ nodetype }}
 tinc-{{ network }}_up:
   file.managed:
     - name: /etc/tinc/{{ network }}/tinc-up
@@ -174,6 +159,23 @@ tinc-{{ network }}-{{ node }}:
       host: {{ node }}
       network: {{ network }}
       nodetype: node
+{% endfor %}
+{% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
+tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
+    - source: {{ tinc['certpath'] }}/{{ master }}/host
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
+    - context:
+      tinc: {{ tinc }}
+      host: {{ master }}
+      network: {{ network }}
+      nodetype: master
 {% endfor %}
 {% elif nodetype == "node" %}
 {% if tinc['network'][network]['master'] is defined %}
