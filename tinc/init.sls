@@ -187,6 +187,10 @@ tinc-{{ network }}_{{ grains['id'] }}-config:
     - template: jinja
     - require:
       - cmd: tinc-{{ network }}_cleanup
+    - context:
+      tinc: {{ tinc }}
+      host: {{ grains['id'] }}
+      network: {{ network }}
 {% elif nodetype == "node" %}
 {% if tinc['network'][network]['master'] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
@@ -216,6 +220,10 @@ tinc-{{ network }}_{{ grains['id'] }}-config:
     - template: jinja
     - require:
       - cmd: tinc-{{ network }}_cleanup
+    - context:
+      tinc: {{ tinc }}
+      host: {{ grains['id'] }}
+      network: {{ network }}
 {% else %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 {% if node != grains['id'] %}
