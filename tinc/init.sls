@@ -108,6 +108,13 @@ tinc-{{ network }}_config:
       host: {{ grains['id'] }}
       network: {{ network }}
       nodetype: {{ nodetype }}
+tinc-{{ network }}_{{ grains['id'] }}-config:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id'] }}
+    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/host
+    - user: root
+    - group: root
+    - mode: 644
 tinc-{{ network }}_{{ grains['id'] }}-privkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.priv
