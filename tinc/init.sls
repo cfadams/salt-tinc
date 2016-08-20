@@ -108,13 +108,6 @@ tinc-{{ network }}_config:
       host: {{ grains['id'] }}
       network: {{ network }}
       nodetype: {{ nodetype }}
-tinc-{{ network }}_{{ grains['id'] }}-config:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id'] }}
-    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/host
-    - user: root
-    - group: root
-    - mode: 644
 tinc-{{ network }}_{{ grains['id'] }}-privkey:
   file.managed:
     - name: /etc/tinc/{{ network }}/rsa_key.priv
@@ -184,6 +177,16 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
       network: {{ network }}
       nodetype: master
 {% endfor %}
+tinc-{{ network }}_{{ grains['id'] }}-config:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id'] }}
+    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/host
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
 {% elif nodetype == "node" %}
 {% if tinc['network'][network]['master'] is defined %}
 {% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
@@ -203,6 +206,16 @@ tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
       network: {{ network }}
       nodetype: master
 {% endfor %}
+tinc-{{ network }}_{{ grains['id'] }}-config:
+  file.managed:
+    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id'] }}
+    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/host
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - cmd: tinc-{{ network }}_cleanup
 {% else %}
 {% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
 {% if node != grains['id'] %}
