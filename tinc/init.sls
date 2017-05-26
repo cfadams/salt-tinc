@@ -1,4 +1,6 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
+{% from "tinc/map.jinja" import mine_data as mine_data %}
+{% from "tinc/map.jinja" import mine_data_externalip as mine_data_externalip %}
 
 {# Add tinc repo #}
 tinc_repo:
@@ -28,45 +30,37 @@ tinc_install:
     - pkgs: {{ tinc['packages'] }}
     - pkgrepo: tinc_repo
 
-{# upstart/sysv init #}
+{# Manage the init system #}
 {% if tinc['init-system'] == 'upstart' or tinc['init-system'] == 'sysv' %}
-tinc_boot:
+{# upstart/sysv init #}
+tinc_service_disableall:
+  service.dead:
+    - name: tinc
+/etc/tinc/nets.boot:
   file.managed:
     - name: /etc/tinc/nets.boot
-    - source: salt://tinc/config/tinc/nets.boot
     - user: root
     - group: root
     - mode: 644
     - template: jinja
-    - context:
-      tinc: {{ tinc }}
-
-{# tinc service #}
-{% if tinc['service']['tinc']['enabled'] == True %}
+    - contents: {{ mine_data[grains['id']] }}
+{% endfor %}
 tinc_service:
   service.running:
     - name: tinc
     - enable: True
     - watch:
-{% for network,network_setting in tinc['network'].iteritems() %}
+{% for network in mine_data[grains['id']] %}
       - file: /etc/tinc/{{ network }}/*
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endfor %}
-{% elif tinc['service']['tinc']['enabled'] == False %}
-tinc_service:
-  service.dead:
-    - name: tinc
-    - enable: False
-{% endif %}
-{% endif %}
-
+{% elif tinc['init-system'] == 'systemd' %}
 {# systemd init #}
-{% if tinc['init-system'] == 'systemd' %}
-tinc_service:
-  service.disabled:
-    - name: tinc
-{% if tinc['service']['tinc']['enabled'] == True %}
-{% for network, network_setting in tinc['network'].iteritems() %}
+{% for network in mine_data[grains['id']] %}
+tinc_service_disableall: # systemctl stop tinc*
+  service.dead:
+    - name: 'tinc*'
+    - enable: False
 tinc_service-{{ network }}:
   service.running:
     - name: tinc@{{ network }}
@@ -76,173 +70,71 @@ tinc_service-{{ network }}:
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endfor %}
 {% endif %}
-{% endif %}
 
 {# Tinc Network Hosts #}
-{% for network,network_setting in tinc['network'].iteritems() %}
-{% if network_setting['master'] is defined and network_setting['master'][grains['id']] is defined %}
-{% set nodetype = "master" %}
-{% else %}
-{% set nodetype = "node" %}
-{% endif %}
-tinc-{{ network }}_network:
+{% for network in mine_data[grains['id']] %}
+/etc/tinc/{{network}}:
   file.directory:
-    - name: /etc/tinc/{{ network }}/hosts
     - user: root
     - group: root
     - mode: 755
     - makedirs: True
-tinc-{{ network }}_cleanup:
-  cmd.run:
-    - name: rm -rf /etc/tinc/{{ network }}/hosts/*
-tinc-{{ network }}_config:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/tinc.conf
-    - source: salt://tinc/config/tinc/tinc.conf
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - context:
-      tinc: {{ tinc }}
-      host: {{ grains['id'] }}
-      network: {{ network }}
-      nodetype: {{ nodetype }}
-tinc-{{ network }}_{{ grains['id'] }}-privkey:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/rsa_key.priv
-    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/rsa_key.priv
-    - user: root
-    - group: root
-    - mode: 644
-tinc-{{ network }}_{{ grains['id'] }}-pubkey:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/rsa_key.pub
-    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/rsa_key.pub
-    - user: root
-    - group: root
-    - mode: 644
-tinc-{{ network }}_up:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/tinc-up
-    - source: salt://tinc/config/tinc/tinc-up
+/etc/tinc/{{network}}/hosts:
+  file.directory:
     - user: root
     - group: root
     - mode: 755
-    - template: jinja
-    - context:
-      tinc: {{ tinc }}
-      network: {{ network }}
-      node: {{ grains['id'] }}
-      nodetype: {{ nodetype }}
-tinc-{{ network }}_down:
+    - clean: True
+/etc/tinc/{{network}}/tinc.conf:
   file.managed:
-    - name: /etc/tinc/{{ network }}/tinc-down
-    - source: salt://tinc/config/tinc/tinc-down
     - user: root
     - group: root
-    - mode: 755
-{% if nodetype == "master" %}
-{% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
-tinc-{{ network }}-{{ node }}:
+    - mode: 644
+    - contents:
+      - Name = {{grains['id']}}
+      {% set config_local = salt['pillar.get']('tinc:network:'~network~':conf:local') %}
+      {% set config_local_final = salt['pillar.get']('tinc:network:'~network~':node:'~grains['id']~':conf:local',default=config_local,merge=True).items() %}
+      {% for option, option_value in config_local_final %}
+      - {{ option }} = {{ option_value }}
+      {% endfor %}
+{% if tinc['network'][network]['type']=="central" %}
+{% if tinc['network'][network]['node'][grains['id']] and tinc['network'][network]['node'][grains['id']]['master']==True %}
+{% for host in mine_data if (network in host) and (host != grains['id']) %}
+{% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
+{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
+/etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
+  file.append:
+    - text:
+      - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
     - source: {{ tinc['certpath'] }}/{{ node }}/host
     - user: root
     - group: root
     - mode: 644
     - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
     - context:
-      tinc: {{ tinc }}
-      host: {{ node }}
-      network: {{ network }}
-      nodetype: node
+      config: {{config_host_final}}
+      public_ip: {{mine_data_externalip[host]}}
 {% endfor %}
-{% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
-tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
-    - source: {{ tinc['certpath'] }}/{{ master }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ master }}
-      network: {{ network }}
-      nodetype: master
-{% endfor %}
-tinc-{{ network }}_{{ grains['id'] }}-config:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id'] }}
-    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ grains['id'] }}
-      network: {{ network }}
-{% elif nodetype == "node" %}
-{% if tinc['network'][network]['master'] is defined %}
-{% for master,master_setting in tinc['network'][network]['master'].iteritems() %}
-tinc-{{ network }}_{{ master|replace(".", "_")|replace("-", "_") }}:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ master|replace(".", "_")|replace("-", "_") }}
-    - source: {{ tinc['certpath'] }}/{{ master }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ master }}
-      network: {{ network }}
-      nodetype: master
-{% endfor %}
-tinc-{{ network }}_{{ grains['id'] }}-config:
-  file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ grains['id'] }}
-    - source: {{ tinc['certpath'] }}/{{ grains['id'] }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
-    - context:
-      tinc: {{ tinc }}
-      host: {{ grains['id'] }}
-      network: {{ network }}
 {% else %}
-{% for node,node_setting in tinc['network'][network]['node'].iteritems() %}
-{% if node != grains['id'] %}
-tinc-{{ network }}-{{ node }}:
+{% for host in mine_data if (network in host) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node']['master'] is defined) and tinc['network'][network]['node']['master']==True) %}
+{% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
+{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
+/etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
+  file.append:
+    - text:
+      - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
-    - name: /etc/tinc/{{ network }}/hosts/{{ node|replace(".", "_")|replace("-", "_") }}
     - source: {{ tinc['certpath'] }}/{{ node }}/host
     - user: root
     - group: root
     - mode: 644
     - template: jinja
-    - require:
-      - cmd: tinc-{{ network }}_cleanup
     - context:
-      tinc: {{ tinc }}
-      host: {{ node }}
-      network: {{ network }}
-      nodetype: node
-{% endif %}
+      config: {{config_host_final}}
+      public_ip: {{mine_data_externalip[host]}}
 {% endfor %}
 {% endif %}
 {% endif %}

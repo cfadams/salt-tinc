@@ -1,40 +1,27 @@
 {% import_yaml "tinc/osmap.yaml" as osmap %}
 {% import_yaml "tinc/defaults.yaml" as defaults %}
 
+{# Get Mine Data #}
+{% set mine_data = salt['mine.get']('*', 'tinc', expr_form = 'glob').items() %}
+{% set mine_data_externalip = salt['mine.get']('*', 'tinc_externalip', expr_form = 'glob').items() %}
 
 {# Map OS to OSName #}
 {% set os_distro = salt['grains.filter_by'](osmap,grain='os',default='Debian') %}
 
 {# Map Operating System version #}
-{% if grains['os'] == 'CentOS' %}
-{% set os_settings = salt['grains.filter_by'](os_distro,grain='osmajorrelease',base='common') %}
-{% else %}
+{% if grains['os'] == 'Ubuntu' %}
 {% set os_settings = salt['grains.filter_by'](os_distro,grain='osrelease',base='common') %}
+{% else %}
+{% set os_settings = salt['grains.filter_by'](os_distro,grain='osmajorrelease',base='common') %}
 {% endif %}
 
 {# Merge in defaults to OS settings #}
 {% do defaults.tinc.update(os_settings) %}
 
 {# Merge in pillar #}
-{% if pillar['tinc'] is defined %}
 {% set tinc_pillar = salt['pillar.get']('tinc',default=defaults.tinc,merge=True) %}
 {% else %}
 {% set tinc_pillar = salt['pillar.get']('',default=defaults.tinc,merge=True) %}
-{% endif %}
-
-{# Remove stuff that is not needed #}
-{% for network, network_setting in pillar['tinc']['network'].iteritems() %}
-{% if network_setting['node'][grains['id']] is not defined and ((network_setting['master'] is defined and network_setting['master'][grains['id']] is not defined) or (network_setting['master'] is not defined))%}
-{% do tinc_pillar.network.pop(network) %}
-{% endif %}
-{% endfor %}
-
-{# Merge Services #}
-{% set clean_pillar = tinc_pillar %}
-{% set service_data = salt['pillar.get']('tinc:service:tinc:common',default=tinc_pillar.service.tinc.common,merge=True) %}
-{% set service_data = salt['pillar.get']('tinc:service:tinc:'~grains['id'],default=service_data,merge=True) %}
-{% do clean_pillar.service.tinc.clear() %}
-{% do clean_pillar.service.tinc.update(service_data) %}
 
 {# Create import pillar #}
-{% set tinc = clean_pillar %}
+{% set tinc = tinc_pillar %}

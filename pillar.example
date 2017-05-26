@@ -5,6 +5,7 @@ tinc:
         enabled: True
   network:
     mynet:
+      type: mesh # "mesh" or "central"
       conf:
         local:
           # See options from https://www.tinc-vpn.org/documentation/tinc.conf.5
@@ -19,15 +20,16 @@ tinc:
           Compression: 0
           Port: 1160
           Subnet: 10.5.0.0/16
-      master:
-        cr02.startledphoenixsrv:
-          public-ip: 192.168.2.1
-          local-ip: 10.5.1.10
-          conf:
-            host:
-              # host configuration can be specified in here as well for just a particular host instead of a whole network
-              Cipher: aes-128-cbc
       node:
         Vivian.remote.alinuxninjasrv:
-          public-ip: 192.168.2.2
-          local-ip: 10.5.1.11
+          ip: 
+            public: 192.168.2.1
+            local: 10.5.1.10/255.255.255.0
+        cr02.startledphoenixsrv:
+          ip: 
+            public: 192.168.2.1
+            local: 10.5.1.10/255.255.255.0
+          conf:
+            host:
+              Port: 5200
+          master: True
