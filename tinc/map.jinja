@@ -2,8 +2,8 @@
 {% import_yaml "tinc/defaults.yaml" as defaults %}
 
 {# Get Mine Data #}
-{% set mine_data = salt['mine.get']('*', 'tinc', expr_form = 'glob').items() %}
-{% set mine_data_externalip = salt['mine.get']('*', 'tinc_externalip', expr_form = 'glob').items() %}
+{% set mine_data = salt['mine.get']('*', 'tinc', expr_form = 'glob') %}
+{% set mine_data_externalip = salt['mine.get']('*', 'tinc_externalip', expr_form = 'glob') %}
 
 {# Map OS to OSName #}
 {% set os_distro = salt['grains.filter_by'](osmap,grain='os',default='Debian') %}
@@ -20,8 +20,6 @@
 
 {# Merge in pillar #}
 {% set tinc_pillar = salt['pillar.get']('tinc',default=defaults.tinc,merge=True) %}
-{% else %}
-{% set tinc_pillar = salt['pillar.get']('',default=defaults.tinc,merge=True) %}
 
 {# Create import pillar #}
 {% set tinc = tinc_pillar %}
