@@ -44,7 +44,6 @@ tinc_service_disableall:
     - mode: 644
     - template: jinja
     - contents: {{ mine_data[grains['id']] }}
-{% endfor %}
 tinc_service:
   service.running:
     - name: tinc
