@@ -103,6 +103,7 @@ tinc_service-{{ network }}:
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
+    - name: /etc/tinc/{{network}}/tinc.conf
     - text:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
@@ -122,6 +123,7 @@ tinc_service-{{ network }}:
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True) %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
+    - name: /etc/tinc/{{network}}/tinc.conf
     - text:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
