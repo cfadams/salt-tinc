@@ -117,7 +117,7 @@ tinc_service-{{ network }}:
       public_ip: {{mine_data_externalip[host]}}
 {% endfor %}
 {% else %}
-{% for host in mine_data if (network in host) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node']['master'] is defined) and (tinc['network'][network]['node']['master']==True) %}
+{% for host, host_networks in mine_data if (network in host_networks) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][node]['master'] is defined) and (tinc['network'][network]['node'][node]['master']==True) %}
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
