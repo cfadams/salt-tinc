@@ -119,7 +119,7 @@ tinc_service-{{ network }}:
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
-{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
+{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True) %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
     - text:
@@ -132,7 +132,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - context:
-      config: {{config_host_final}}
+      config: {{ config_host_final }}
 {% endfor %}
 {% endif %}
 {% endif %}
