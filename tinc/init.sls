@@ -98,7 +98,7 @@ tinc_service-{{ network }}:
       {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']] is defined and tinc['network'][network]['node'][grains['id']]['master']==True %}
-{% for host in mine_data if (network in host) and (host != grains['id']) %}
+{% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (host != grains['id']) %}
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
@@ -107,7 +107,7 @@ tinc_service-{{ network }}:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
-    - source: {{ tinc['certpath'] }}/{{ node }}/host
+    - source: {{ tinc['certpath'] }}/{{ host }}/host
     - user: root
     - group: root
     - mode: 644
@@ -126,7 +126,7 @@ tinc_service-{{ network }}:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
-    - source: {{ tinc['certpath'] }}/{{ node }}/host
+    - source: {{ tinc['certpath'] }}/{{ host }}/host
     - user: root
     - group: root
     - mode: 644
