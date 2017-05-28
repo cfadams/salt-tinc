@@ -133,7 +133,6 @@ tinc_service-{{ network }}:
     - template: jinja
     - context:
       config: {{config_host_final}}
-      #public_ip: {{mine_data_externalip[host]}}
 {% endfor %}
 {% endif %}
 {% endif %}
