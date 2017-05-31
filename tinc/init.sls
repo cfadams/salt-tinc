@@ -133,6 +133,10 @@ tinc_service-{{ network }}:
       {% for option, option_value in config_host_final.iteritems() -%}
       - {{ option }} = {{ option_value }}
       {% endfor -%}
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}-pubkey:
+  file.append:
+    - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
+    - source: salt://{{tinc['keypath']}}/{{grains['id']}}/rsa_key.pub
 {% endfor %}
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
@@ -153,11 +157,15 @@ tinc_service-{{ network }}:
       {% if host_settings['ip'] is defined and host_settings['ip']['public'] is defined %}
       - Address = {{host_settings['ip']['public']}}
       {% else %}
-      - Address = mine_data_externalip['host']
+      - Address = {{ mine_data_externalip['host'] }}
       {% endif %}
       {% for option, option_value in config_host_final.iteritems() -%}
       - {{ option }} = {{ option_value }}
       {% endfor -%}
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}-pubkey:
+  file.append:
+    - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
+    - source: salt://{{tinc['keypath']}}/{{grains['id']}}/rsa_key.pub
 {% endfor %}
 {% endif %}
 {% endif %}
