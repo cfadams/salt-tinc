@@ -103,7 +103,7 @@ tinc_service-{{ network }}:
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
 {% else %}
-{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':conf:host',,default=None,merge=True).items() %}
+{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':conf:host',default=None,merge=True).items() %}
 {% endif %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
