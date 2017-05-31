@@ -143,7 +143,7 @@ tinc_service-{{ network }}:
       {% for option, option_value in config_host_final.iteritems() -%}
       - {{ option }} = {{ option_value }}
       {% endfor -%}
-/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}-appendkey:
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_appendkey:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
@@ -172,7 +172,7 @@ tinc_service-{{ network }}:
       {% for option, option_value in config_host_final.iteritems() %}
       - {{ option }} = {{ option_value }}
       {% endfor %}
-/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}-appendkey:
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_appendkey:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
