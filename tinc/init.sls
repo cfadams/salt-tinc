@@ -136,14 +136,14 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - contents:
-      {% if host_settings['ip'] is defined and host_settings['ip']['public'] is defined %}
+{% if host_settings['ip'] is defined and host_settings['ip']['public'] is defined %}
       - Address = {{host_settings['ip']['public']}}
-      {% else %}
+{% else %}
       - Address = mine_data_externalip
-      {% endif %}
-      {% for option, option_value in config_host_final.iteritems() %}
+{% endif %}
+{% for option, option_value in config_host_final.iteritems() %}
       - {{ option }} = {{ option_value }}
-      {% endfor %}
+{% endfor %}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_appendkey:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
@@ -166,14 +166,14 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - contents:
-      {% if host_settings['ip'] is defined and host_settings['ip']['public'] is defined %}
+{% if host_settings['ip'] is defined and host_settings['ip']['public'] is defined %}
       - Address = {{host_settings['ip']['public']}}
-      {% else %}
+{% else %}
       - Address = mine_data_externalip
-      {% endif %}
-      {% for option, option_value in config_host_final.iteritems() %}
+{% endif %}
+{% for option, option_value in config_host_final.iteritems() %}
       - {{ option }} = {{ option_value }}
-      {% endfor %}
+{% endfor %}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_appendkey:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
