@@ -143,6 +143,10 @@ tinc_service-{{ network }}:
       {% for option, option_value in config_host_final.iteritems() -%}
       - {{ option }} = {{ option_value }}
       {% endfor -%}
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}-appendkey:
+  file.append:
+    - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
+    - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
 {% endfor %}
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
