@@ -98,13 +98,13 @@ tinc_service-{{ network }}:
       {% endfor %}
 /etc/tinc/{{network}}/rsa_key.priv:
   file.managed:
-    - source: {{tinc['keypath']}}/{{grains['id']}}/rsa_key.priv
+    - source: salt://{{tinc['keypath']}}/{{grains['id']}}/rsa_key.priv
     - user: root
     - group: root
     - mode: 400
 /etc/tinc/{{network}}/rsa_key.pub:
   file.managed:
-    - source: {{tinc['keypath']}}/{{grains['id']}}/rsa_key.pub
+    - source: salt://{{tinc['keypath']}}/{{grains['id']}}/rsa_key.pub
     - user: root
     - group: root
     - mode: 400
