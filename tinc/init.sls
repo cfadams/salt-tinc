@@ -118,13 +118,13 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - context:
-      config: {{ config_host_final }}
+      config: {{ config_host_final|yaml_encode|yaml_decode }}
 {% endfor %}
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
 {% if tinc['network'][network]['node'][host] is defined %}
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
-{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
+{% do config_host.update(ntpconfig) %}
 {% else %}
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':conf:host',default=None,merge=True).items() %}
 {% endif %}
@@ -141,7 +141,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - context:
-      config: {{ config_host_final }}
+      config: {{ config_host_final|yaml_encode|yaml_decode }}
 {% endfor %}
 {% endif %}
 {% endif %}
