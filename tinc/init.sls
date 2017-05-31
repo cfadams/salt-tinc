@@ -128,7 +128,7 @@ tinc_service-{{ network }}:
     - name: /etc/tinc/{{network}}/tinc.conf
     - text:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
-/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
     - user: root
     - group: root
