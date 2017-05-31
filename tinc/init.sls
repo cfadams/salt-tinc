@@ -49,7 +49,7 @@ tinc_service:
     - name: tinc
     - enable: True
     - require:
-      - file: /etc/tinc/{{ network }}
+      - file: /etc/tinc/*
     - watch:
 {% for network in mine_data[grains['id']] %}
       - file: /etc/tinc/{{ network }}/*
