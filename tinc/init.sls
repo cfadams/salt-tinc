@@ -165,13 +165,13 @@ tinc_service-{{ network }}:
       {% else %}
       - Address = mine_data_externalip['host']
       {% endif %}
-      {% for option, option_value in config_host_final.iteritems() -%}
+      {% for option, option_value in config_host_final.iteritems() %}
       - {{ option }} = {{ option_value }}
-      {% endfor -%}
-{{host}}-pubkey:
+      {% endfor %}
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}-appendkey:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
-    - source: salt://{{tinc['keypath']}}/{{grains['id']}}/rsa_key.pub
+    - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
 {% endfor %}
 {% endif %}
 {% endif %}
