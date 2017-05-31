@@ -128,9 +128,8 @@ tinc_service-{{ network }}:
     - name: /etc/tinc/{{network}}/tinc.conf
     - text:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
-/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_conf:
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
   file.managed:
-    - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - user: root
     - group: root
     - mode: 644
@@ -158,9 +157,8 @@ tinc_service-{{ network }}:
     - name: /etc/tinc/{{network}}/tinc.conf
     - text:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
-/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_conf:
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
-    - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - user: root
     - group: root
     - mode: 644
