@@ -96,6 +96,18 @@ tinc_service-{{ network }}:
       {% for option, option_value in config_local_final %}
       - {{ option }} = {{ option_value }}
       {% endfor %}
+/etc/tinc/{{network}}/rsa_key.priv:
+  file.managed:
+    - source: tinc['keypath']/{{grains['id']}}/rsa_key.priv
+    - user: root
+    - group: root
+    - mode: 400
+/etc/tinc/{{network}}/rsa_key.pub:
+  file.managed:
+    - source: tinc['keypath']/{{grains['id']}}/rsa_key.pub
+    - user: root
+    - group: root
+    - mode: 400
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']] is defined and tinc['network'][network]['node'][grains['id']]['master']==True %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (host != grains['id']) %}
