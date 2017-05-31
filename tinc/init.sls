@@ -78,6 +78,9 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 755
     - makedirs: True
+    - require_in:
+      - file: /etc/tinc/{{network}}/*
+      - file: /etc/tinc/{{network}}/hosts
 /etc/tinc/{{network}}/hosts:
   file.directory:
     - user: root
