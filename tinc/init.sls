@@ -118,15 +118,6 @@ tinc_service-{{ network }}:
     - name: /etc/tinc/{{network}}/tinc.conf
     - text:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
-/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
-  file.managed:
-    - source: {{ tinc['certpath'] }}/{{ host }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - context:
-      config: {{ config_host_final }}
 {% endfor %}
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
