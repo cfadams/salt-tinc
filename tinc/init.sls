@@ -120,13 +120,19 @@ tinc_service-{{ network }}:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
-    - source: {{ tinc['certpath'] }}/{{ host }}/host
     - user: root
     - group: root
     - mode: 644
     - template: jinja
-    - context:
-      config: {{ config_host_final }}
+    - contents:
+      {% if host_settings['ip'] is defined and host_settings['ip']['public'] is defined %}
+      - Address = {{host_settings['ip']['public']}}
+      {% else %}
+      - Address = mine_data_externalip['host']
+      {% endif %}
+      {% for option, option_value in config_host_final.iteritems() -%}
+      - {{ option }} = {{ option_value }}
+      {% endfor -%}
 {% endfor %}
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
@@ -139,13 +145,19 @@ tinc_service-{{ network }}:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
-    - source: {{ tinc['certpath'] }}/{{ host }}/host
     - user: root
     - group: root
     - mode: 644
     - template: jinja
-    - context:
-      config: {{ config_host_final }}
+    - contents:
+      {% if host_settings['ip'] is defined and host_settings['ip']['public'] is defined %}
+      - Address = {{host_settings['ip']['public']}}
+      {% else %}
+      - Address = mine_data_externalip['host']
+      {% endif %}
+      {% for option, option_value in config_host_final.iteritems() -%}
+      - {{ option }} = {{ option_value }}
+      {% endfor -%}
 {% endfor %}
 {% endif %}
 {% endif %}
