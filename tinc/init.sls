@@ -122,8 +122,12 @@ tinc_service-{{ network }}:
 {% endfor %}
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
+{% if tinc['network'][network]['node'][host] is defined %}
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
-{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True) %}
+{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
+{% else %}
+{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':conf:host').items() %}
+{% endif %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
     - name: /etc/tinc/{{network}}/tinc.conf
