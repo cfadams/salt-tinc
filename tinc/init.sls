@@ -97,7 +97,6 @@ tinc_service-{{ network }}:
       - {{ option }} = {{ option_value }}
       {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
-
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True) %}
@@ -116,6 +115,5 @@ tinc_service-{{ network }}:
     - context:
       config: {{ config_host_final }}
 {% endfor %}
-{% endif %}
 {% endif %}
 {% endfor %}
