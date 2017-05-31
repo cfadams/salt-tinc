@@ -109,7 +109,7 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 400
 {% if tinc['network'][network]['type']=="central" %}
-{% if tinc['network'][network]['node'][grains['id']] is defined and tinc['network'][network]['node'][grains['id']]['master']==True %}
+{% if tinc['network'][network]['node'][grains['id']] is defined and tinc['network'][network]['node'][grains['id']]['master'] is defined and tinc['network'][network]['node'][grains['id']]['master']==True %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (host != grains['id']) %}
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True) %}
