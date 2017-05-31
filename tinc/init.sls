@@ -99,7 +99,7 @@ tinc_service-{{ network }}:
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']] is defined and tinc['network'][network]['node'][grains['id']]['master']==True %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (host != grains['id']) %}
-{% if tinc['network'][network]['node'][host]['conf']['host'] is defined %}
+{% if tinc['network'][network]['node'] is defined and tinc['network'][network]['node'][host] is defined and tinc['network'][network]['node'][host]['conf'] is defined and tinc['network'][network]['node'][host]['conf']['host'] is defined %}
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
 {% else %}
@@ -123,7 +123,7 @@ tinc_service-{{ network }}:
 {% endfor %}
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
-{% if tinc['network'][network]['node'][host]['conf']['host'] is defined %}
+{% if tinc['network'][network]['node'] is defined and tinc['network'][network]['node'][host] is defined and tinc['network'][network]['node'][host]['conf'] is defined and tinc['network'][network]['node'][host]['conf']['host'] is defined %}
 {% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
 {% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True).items() %}
 {% else %}
