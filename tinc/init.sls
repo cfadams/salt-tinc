@@ -117,25 +117,6 @@ tinc_service-{{ network }}:
       config: {{config_host_final}}
       public_ip: {{mine_data_externalip[host]}}
 {% endfor %}
-{% else %}
-{% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
-{% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
-{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True) %}
-/etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
-  file.append:
-    - name: /etc/tinc/{{network}}/tinc.conf
-    - text:
-      - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
-/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
-  file.managed:
-    - source: {{ tinc['certpath'] }}/{{ host }}/host
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - context:
-      config: {{ config_host_final }}
-{% endfor %}
 {% endif %}
 {% endif %}
 {% endfor %}
