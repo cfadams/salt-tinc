@@ -92,7 +92,7 @@ tinc_service-{{ network }}:
     - contents:
       - Name = {{grains['id']}}
       {% set config_local = salt['pillar.get']('tinc:network:'~network~':conf:local') %}
-      {% set config_local_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:local',default=config_local,merge=True) %}
+      {% set config_local_final = salt['pillar.get']('tinc:network:'~network~':node:'~grains['id']~':conf:local',default=config_local,merge=True) %}
       {% for option, option_value in config_local_final.iteritems() %}
       - {{ option }} = {{ option_value }}
       {% endfor %}
