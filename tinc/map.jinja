@@ -1,9 +1,11 @@
 {% import_yaml "tinc/osmap.yaml" as osmap %}
 {% import_yaml "tinc/defaults.yaml" as defaults %}
+{% import_yaml "tinc/defaults.network.yaml" as network_defaults %}
+{% import_yaml "tinc/defaults.network.yaml" as node_defaults %}
 
 {# Get Mine Data #}
-{% set mine_data = salt['mine.get']('*', 'tinc', expr_form = 'glob') %}
-{% set mine_data_externalip = salt['mine.get']('*', 'tinc_externalip', expr_form = 'glob') %}
+{% set tinc_hosts = salt['mine.get']('*', 'tinc', expr_form = 'glob') %}
+{% set tinc_externalip = salt['mine.get']('*', 'tinc_externalip', expr_form = 'glob') %}
 
 {# Map OS to OSName #}
 {% set os_distro = salt['grains.filter_by'](osmap,grain='os',default='Debian') %}
@@ -20,6 +22,34 @@
 
 {# Merge in pillar #}
 {% set tinc_pillar = salt['pillar.get']('tinc',default=defaults.tinc,merge=True) %}
+
+{# Add Network Defaults #}
+{% for network, network_settings in tinc_pillar['network'].iteritems() %}
+{% set merged_network = salt['pillar.get']('tinc:network:'~network,default=network_defaults,merge=True) %}
+{% do tinc_pillar['network'][network]=merged_network %}
+{% if network_settings['node'] %}
+{% for node, node_setting in network_setting['node'].iteritems() %}
+{% set merged_node = salt['pillar.get']('tinc:network:'~network~':node:'~node,default=node_defaults,merge=True) %}
+{% do tinc_pillar['network'][network]['node'][node]=merged_node %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+{# Merge Custom Config #}
+{% for host, host_networks in tinc_hosts.iteritems() %}
+{% for network in host_networks %}
+{% if tinc_pillar['network'][network]['node'][host] is not defined %}
+{% do tinc_pillar['network'][network]['node'][host]=node_defaults %}
+{% endif %}
+{% set network_conf_local = salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:local') %}
+{% set network_conf_host = salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:local') %}
+{% do tinc_pillar['network'][network]['node'][host]['conf']['local'] = salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:local',default=network_conf_local,merge=True) %}
+{% do tinc_pillar['network'][network]['node'][host]['conf']['host'] = salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:host',default=network_conf_host,merge=True) %}
+{% if tinc_externalip['host'] is defined and tinc_pillar['network'][network]['node'][host]['conf']['host']['ip']['public']=="" %}
+{% do tinc_pillar['network'][network]['node'][host]['conf']['host']['ip']['public']=tinc_externalip['host'] %}
+{% endif %}
+{% endfor %}
+{% endfor %}
 
 {# Create import pillar #}
 {% set tinc = tinc_pillar %}

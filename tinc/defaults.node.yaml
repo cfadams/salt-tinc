@@ -1,0 +1,7 @@
+ip:
+  public: ""
+  local: ""
+conf:
+  host: {}
+  local: {}
+master: False

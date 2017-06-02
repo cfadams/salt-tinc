@@ -1,6 +1,5 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
 {% from "tinc/map.jinja" import mine_data as mine_data %}
-{% from "tinc/map.jinja" import mine_data_externalip as mine_data_externalip %}
 
 {# Add tinc repo #}
 tinc_repo:
@@ -95,11 +94,9 @@ tinc_service-{{ network }}:
     - mode: 644
     - contents:
       - Name = {{grains['id']}}
-      {% set config_local = salt['pillar.get']('tinc:network:'~network~':conf:local') %}
-      {% set config_local_final = salt['pillar.get']('tinc:network:'~network~':node:'~grains['id']~':conf:local',default=config_local,merge=True).items() %}
-      {% for option, option_value in config_local_final %}
+{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['local'].iteritems() %}
       - {{ option }} = {{ option_value }}
-      {% endfor %}
+{% endfor %}
     - require:
       - file: /etc/tinc/{{ network }}
 /etc/tinc/{{network}}/rsa_key.priv:
@@ -119,10 +116,8 @@ tinc_service-{{ network }}:
     - require:
       - file: /etc/tinc/{{ network }}
 {% if tinc['network'][network]['type']=="central" %}
-{% if tinc['network'][network]['node'][grains['id']] is defined and tinc['network'][network]['node'][grains['id']]['master'] is defined and tinc['network'][network]['node'][grains['id']]['master']==True %}
+{% if tinc['network'][network]['node'][grains['id']]['master']==True %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (host != grains['id']) %}
-{% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
-{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True) %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
     - name: /etc/tinc/{{network}}/tinc.conf
@@ -135,12 +130,8 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - contents:
-{% if host_settings['ip'] is defined and host_settings['ip']['public'] is defined %}
       - Address = {{host_settings['ip']['public']}}
-{% else %}
-      - Address = mine_data_externalip
-{% endif %}
-{% for option, option_value in config_host_final.iteritems() %}
+{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_appendkey:
@@ -149,9 +140,7 @@ tinc_service-{{ network }}:
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
 {% endfor %}
 {% else %}
-{% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host] is defined) and (tinc['network'][network]['node'][host]['master'] is defined) and (tinc['network'][network]['node'][host]['master']==True) %}
-{% set config_host = salt['pillar.get']('tinc:network:'~network~':conf:host') %}
-{% set config_host_final = salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=config_host,merge=True) %}
+{% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host]['master']==True) %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
     - name: /etc/tinc/{{network}}/tinc.conf
@@ -169,7 +158,7 @@ tinc_service-{{ network }}:
 {% else %}
       - Address = mine_data_externalip
 {% endif %}
-{% for option, option_value in config_host_final.iteritems() %}
+{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_appendkey:

@@ -1,0 +1,5 @@
+type: central
+conf:
+  local: {}
+  host: {}
+node: {}
