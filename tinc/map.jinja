@@ -1,7 +1,7 @@
 {% import_yaml "tinc/osmap.yaml" as osmap %}
 {% import_yaml "tinc/defaults.yaml" as defaults %}
 {% import_yaml "tinc/defaults.network.yaml" as network_defaults %}
-{% import_yaml "tinc/defaults.network.yaml" as node_defaults %}
+{% import_yaml "tinc/defaults.node.yaml" as node_defaults %}
 
 {# Get Mine Data #}
 {% set tinc_hosts = salt['mine.get']('*', 'tinc', expr_form = 'glob') %}
