@@ -5,13 +5,15 @@ tinc:
       conf:
         local:
           # See options from https://www.tinc-vpn.org/documentation/tinc.conf.5
-          # Name and ConnectTo values are fixed and predefined
+          # Predefined/Unchangeable Keys: Name, ConnectTo
+          # Required: Port, Mode
           AddressFamily: "any"
           Mode: "switch"
+          Port: 1160
         host:
           # See options from https://www.tinc-vpn.org/documentation/Host-configuration-variables.html
-          # Address is predefined
-          # Port and Subnet are required
+          # Predefined Keys: Address
+          # Required: Port, Subnet
           Cipher: aes-128-cbc
           Compression: 0
           Port: 1160
@@ -26,6 +28,8 @@ tinc:
             public: 192.168.2.1
             local: 10.5.1.10/255.255.255.0
           conf:
+            local:
+              Port: 5200
             host:
               Port: 5200
           master: True

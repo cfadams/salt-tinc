@@ -93,7 +93,7 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 644
     - contents:
-      - Name = {{grains['id']}}
+      - Name = {{ grains['id']|replace(".", "_")|replace("-", "_") }}
 {% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['local'].iteritems() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
