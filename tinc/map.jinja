@@ -26,11 +26,11 @@
 {# Add Network Defaults #}
 {% for network, network_settings in tinc_pillar['network'].iteritems() %}
 {% set merged_network=salt['pillar.get']('tinc:network:'~network,default = network_defaults,merge=True) %}
-{% do tinc_pillar['network'].update({network: merged_network}) %}
+{% do tinc_pillar['network'][network].update(merged_network) %}
 {% if network_settings['node'] %}
 {% for node, node_setting in network_setting['node'].iteritems() %}
 {% set merged_node = salt['pillar.get']('tinc:network:'~network~':node:'~node,default=node_defaults,merge=True) %}
-{% do tinc_pillar['network'][network]['node'].update({node: merged_node}) %}
+{% do tinc_pillar['network'][network]['node'][node].update(merged_node) %}
 {% endfor %}
 {% endif %}
 {% endfor %}
@@ -39,14 +39,14 @@
 {% for host, host_networks in tinc_hosts.iteritems() %}
 {% for network in host_networks %}
 {% if tinc_pillar['network'][network]['node'][host] is not defined %}
-{% set tinc_pillar['network'][network]['node'][host] = node_defaults %}
+{% do tinc_pillar['network'][network]['node'].update({host: node_defaults}) %}
 {% endif %}
 {% set network_conf_local=salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:local') %}
 {% set network_conf_host=salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:local') %}
-{% set tinc_pillar['network'][network]['node'][host]['conf']['local'] = salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:local',default=network_conf_local,merge=True) %}
-{% set tinc_pillar['network'][network]['node'][host]['conf']['host'] = salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:host',default=network_conf_host,merge=True) %}
+{% do tinc_pillar['network'][network]['node'][host]['conf']['local'].update(salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:local',default=network_conf_local,merge=True)) %}
+{% do tinc_pillar['network'][network]['node'][host]['conf']['host'].update(salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:host',default=network_conf_host,merge=True)) %}
 {% if tinc_externalip['host'] is defined and tinc_pillar['network'][network]['node'][host]['conf']['host']['ip']['public'] == "" %}
-{% set tinc_pillar['network'][network]['node'][host]['conf']['host']['ip']['public'] = tinc_externalip['host'] %}
+{% do tinc_pillar['network'][network]['node'][host]['conf']['host']['ip']['public'].update(tinc_externalip['host']) %}
 {% endif %}
 {% endfor %}
 {% endfor %}
