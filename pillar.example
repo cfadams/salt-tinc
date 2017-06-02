@@ -1,8 +1,4 @@
 tinc:
-  service:
-    tinc:
-      common:
-        enabled: True
   network:
     mynet:
       type: mesh # "mesh" or "central"
@@ -22,11 +18,11 @@ tinc:
           Subnet: 10.5.0.0/16
       node:
         Vivian.remote.alinuxninjasrv:
-          ip: 
+          ip:
             public: 192.168.2.1
             local: 10.5.1.10/255.255.255.0
         cr02.startledphoenixsrv:
-          ip: 
+          ip:
             public: 192.168.2.1
             local: 10.5.1.10/255.255.255.0
           conf:

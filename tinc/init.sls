@@ -163,5 +163,28 @@ tinc_service-{{ network }}:
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
 {% endfor %}
 {% endif %}
+{% elif tinc['network'][network]['type']=="mesh" %}
+{% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (host != grains['id']) %}
+/etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
+  file.append:
+    - name: /etc/tinc/{{network}}/tinc.conf
+    - text:
+      - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - contents:
+      - Address = {{tinc['network'][network]['node'][host]['ip']['public']}}
+{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
+      - {{ option }} = {{ option_value }}
+{% endfor %}
+/etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_appendkey:
+  file.append:
+    - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
+    - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
+{% endfor %}
 {% endif %}
 {% endfor %}
