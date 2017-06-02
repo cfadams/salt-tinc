@@ -26,7 +26,7 @@
 {# Add Network Defaults #}
 {% for network, network_settings in tinc_pillar['network'].iteritems() %}
 {% set merged_network=salt['pillar.get']('tinc:network:'~network,default = network_defaults,merge=True) %}
-{% do tinc_pillar['network'][network]=merged_network %}
+{% do tinc_pillar.network.update({network: merged_network}) %}
 {% if network_settings['node'] %}
 {% for node, node_setting in network_setting['node'].iteritems() %}
 {% set merged_node = salt['pillar.get']('tinc:network:'~network~':node:'~node,default=node_defaults,merge=True) %}
