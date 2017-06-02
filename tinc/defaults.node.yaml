@@ -1,7 +1,3 @@
-ip:
-  public: ""
-  local: ""
-conf:
-  host: {}
-  local: {}
+ip: {}
+conf: {}
 master: False
