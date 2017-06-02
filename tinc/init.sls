@@ -130,7 +130,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - contents:
-      - Address = {{host_settings['ip']['public']}}
+      - Address = {{tinc['network'][network]['node'][host]['ip']['public']}}
 {% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
@@ -153,11 +153,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - contents:
-{% if host_settings['ip'] is defined and host_settings['ip']['public'] is defined %}
-      - Address = {{host_settings['ip']['public']}}
-{% else %}
-      - Address = mine_data_externalip
-{% endif %}
+      - Address = {{tinc['network'][network]['node'][host]['ip']['public']}}
 {% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
