@@ -28,7 +28,7 @@
 {% set merged_network=salt['pillar.get']('tinc:network:'~network,default = network_defaults,merge=True) %}
 {% do tinc_pillar['network'][network].update(merged_network) %}
 {% if network_settings['node'] %}
-{% for node, node_setting in network_setting['node'].iteritems() %}
+{% for node, node_setting in network_settings['node'].iteritems() %}
 {% set merged_node = salt['pillar.get']('tinc:network:'~network~':node:'~node,default=node_defaults,merge=True) %}
 {% do tinc_pillar['network'][network]['node'][node].update(merged_node) %}
 {% endfor %}
