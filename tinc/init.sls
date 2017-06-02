@@ -1,5 +1,5 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
-{% from "tinc/map.jinja" import mine_data as mine_data %}
+{% from "tinc/map.jinja" import tinc_hosts as mine_data %}
 
 {# Add tinc repo #}
 tinc_repo:
