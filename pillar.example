@@ -14,10 +14,15 @@ tinc:
           # See options from https://www.tinc-vpn.org/documentation/Host-configuration-variables.html
           # Predefined Keys: Address
           # Required: Port, Subnet
+          # Port value must match the value defined in "local"
           Cipher: aes-128-cbc
           Compression: 0
           Port: 1160
           Subnet: 10.5.0.0/16
+        scripts:
+          up:
+            - dhclient {interface}
+          down: []
       node:
         Vivian.remote.alinuxninjasrv:
           ip:

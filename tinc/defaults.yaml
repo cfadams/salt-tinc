@@ -2,7 +2,3 @@ tinc:
   certpath: /srv/salt/secure/tinc
   keypath: /secure/tinc/
   network: {}
-  service:
-    tinc:
-      common:
-        enabled: True
