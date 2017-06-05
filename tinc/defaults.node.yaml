@@ -2,5 +2,5 @@ ip: {}
 conf:
   local: {}
   host: {}
-  scripts: {}
+scripts: {}
 master: False
