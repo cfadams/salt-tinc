@@ -124,7 +124,7 @@ tinc_service-{{ network }}:
     - contents:
       - "#!/bin/bash"
 {% for script_line in script_contents %}
-      - script_line
+      - {{ script_line }}
 {% endfor %}
 {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
