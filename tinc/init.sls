@@ -115,6 +115,18 @@ tinc_service-{{ network }}:
     - mode: 400
     - require:
       - file: /etc/tinc/{{ network }}
+{% for script, script_contents in tinc['network'][network]['scripts'].iteritems() %}
+/etc/tinc/{{network}}/{{script}}:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 700
+    - contents:
+      - "#!/bin/bash"
+{% for script_line in script_contents %}
+      - script_line
+{% endfor %}
+{% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']]['master']==True %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (host != grains['id']) %}
