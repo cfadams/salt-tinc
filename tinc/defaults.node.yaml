@@ -1,3 +1,6 @@
 ip: {}
-conf: {}
+conf:
+  local: {}
+  host: {}
+  scripts: {}
 master: False
