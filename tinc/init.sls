@@ -115,14 +115,41 @@ tinc_service-{{ network }}:
     - mode: 400
     - require:
       - file: /etc/tinc/{{ network }}
-{% for script, script_contents in tinc['network'][network]['scripts'].iteritems() %}
-/etc/tinc/{{network}}/{{script}}:
+/etc/tinc/{{network}}/tinc-up:
   file.managed:
     - user: root
     - group: root
     - mode: 700
     - contents:
-      - "#!/bin/bash"
+      - #!/bin/sh
+{% if tinc['network'][network]['node'][grains['id']]['ip']['local'] != "dhcp" %}
+      - ip addr add {{tinc['network'][network]['node'][grains['id']]['ip']['local']}} dev $INTERFACE
+      - ip link set $INTERFACE up
+{% else %}
+      - dhclient $INTERFACE
+{% endif %}
+/etc/tinc/{{network}}/tinc-down:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 700
+    - contents:
+      - #!/bin/sh
+      - ifconfig $INTERFACE down
+{% for script, script_contents in tinc['network'][network]['scripts'].iteritems() %}
+/etc/tinc/{{network}}/{{script}}-custom:
+{% if script == "tinc-up" or script == "tinc-down" %}
+  file.append:
+    - name: /etc/tinc/{{network}}/{{script}}
+    - text:
+{% else %}
+  file.managed:
+    - name: /etc/tinc/{{network}}/{{script}}
+    - user: root
+    - group: root
+    - mode: 700
+    - contents:
+{% endif %}
 {% for script_line in script_contents %}
       - {{ script_line }}
 {% endfor %}
