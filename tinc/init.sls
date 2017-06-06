@@ -1,33 +1,11 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
 {% from "tinc/map.jinja" import tinc_hosts as mine_data %}
 
-{# Add tinc repo #}
-tinc_repo:
-{% if grains['os'] == 'Ubuntu' %}
-  pkgrepo.managed:
-    - humanname: Tinc-VPN
-    - name: deb {{ tinc['repo']['tinc']['url'] }}
-    - file: /etc/apt/sources.list.d/tinc.list
-    - key_url: {{ tinc['repo']['tinc']['key'] }}
-{% elif grains['os'] == 'Debian' %}
-  pkgrepo.managed:
-    - humanname: Tinc VPN
-    - name: deb {{ tinc['repo']['tinc']['url'] }}
-    - file: /etc/apt/sources.list.d/tinc.list
-    - key_url: {{ tinc['repo']['tinc']['key'] }}
-{% elif grains['os'] == 'CentOS' %}
-  file.managed:
-    - name: /etc/yum.repos.d/tinc.repo
-    - source: {{ tinc['repo']['tinc']['url'] }}
-    - source_hash: sha512={ tinc['repo']['tinc']['hash'] }}
-{% endif %}
-
 {# tinc installation #}
 tinc_install:
   pkg.latest:
     - refresh: True
     - pkgs: {{ tinc['packages'] }}
-    - pkgrepo: tinc_repo
 
 {# Manage the init system #}
 {% if tinc['init-system'] == 'upstart' or tinc['init-system'] == 'sysv' %}
