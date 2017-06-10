@@ -20,9 +20,9 @@ tinc:
           Port: 1160
           Subnet: 10.5.0.0/16
         scripts:
-          up:
+          tinc-up:
             - dhclient {interface}
-          down: []
+          tinc-down: []
       node:
         Vivian.remote.alinuxninjasrv:
           ip:

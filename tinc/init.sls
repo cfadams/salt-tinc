@@ -72,9 +72,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - contents:
       - Name = {{ grains['id']|replace(".", "_")|replace("-", "_") }}
-{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['local'].iteritems() %}
-      - {{ option }} = {{ option_value }}
-{% endfor %}
+
     - require:
       - file: /etc/tinc/{{ network }}
 /etc/tinc/{{network}}/rsa_key.priv:
