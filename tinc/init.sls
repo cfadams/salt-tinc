@@ -99,12 +99,12 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 700
     - contents:
-      - #!/bin/sh
+      - "#!/bin/sh"
 {% if tinc['network'][network]['node'][grains['id']]['ip']['local'] != "dhcp" %}
       - ip addr add {{tinc['network'][network]['node'][grains['id']]['ip']['local']}} dev $INTERFACE
       - ip link set $INTERFACE up
 {% else %}
-      - dhclient $INTERFACE
+      - "dhclient $INTERFACE &> /dev/null"
 {% endif %}
 /etc/tinc/{{network}}/tinc-down:
   file.managed:
@@ -112,7 +112,8 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 700
     - contents:
-      - #!/bin/sh
+      - "#!/bin/sh"
+      - kill $(pgrep -f "dhclient {{network}}")
       - ifconfig $INTERFACE down
 {% for script, script_contents in tinc['network'][network]['scripts'].iteritems() %}
 /etc/tinc/{{network}}/{{script}}-custom:
