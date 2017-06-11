@@ -95,27 +95,24 @@ tinc_service-{{ network }}:
       - file: /etc/tinc/{{ network }}
 /etc/tinc/{{network}}/tinc-up:
   file.managed:
-    - source: salt://tinc/config/tinc-up
     - user: root
     - group: root
     - mode: 700
-    - template: jinja
-    - context:
-      {% if tinc['network'][network]['node'][grains['id']]['ip']['local'] != "dhcp" %}
-      dhcp: True
-      network: {{network}}
+    - contents:
+      - "#!/bin/bash"
+      {%- if tinc['network'][network]['node'][grains['id']]['ip']['local'] == "dhcp" %}
+      - ip addr add {{tinc['network'][network]['node'][grains['id']]['ip']['local']}} dev $INTERFACE
+      - ip link set $INTERFACE up
       {% else %}
-      dhcp: False
-      ip: {{tinc['network'][network]['node'][grains['id']]['ip']['local']}}
-      network: {{network}}
-      {% endif %}
+      - dhclient $INTERFACE
+      {%- endif %}
 /etc/tinc/{{network}}/tinc-down:
   file.managed:
     - user: root
     - group: root
     - mode: 700
     - contents:
-      - "kill $(pgrep -f 'dhclient {{network}}')"
+      - "dhclient -r $INTERFACE"
       - "ifconfig $INTERFACE down"
 {% for script, script_contents in tinc['network'][network]['scripts'].iteritems() %}
 /etc/tinc/{{network}}/{{script}}-custom:
@@ -137,12 +134,14 @@ tinc_service-{{ network }}:
 {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']]['master']==True %}
-{% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (host != grains['id']) %}
+{% for host, host_settings in mine_data.iteritems() if (network in host_settings) %}
+{% if  host != grains['id'] %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
     - name: /etc/tinc/{{network}}/tinc.conf
     - text:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
+{% endif %}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
     - user: root
@@ -184,12 +183,14 @@ tinc_service-{{ network }}:
 {% endfor %}
 {% endif %}
 {% elif tinc['network'][network]['type']=="mesh" %}
-{% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (host != grains['id']) %}
+{% for host, host_settings in mine_data.iteritems() if (network in host_settings) %}
+{% if host != grains['id'] %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
     - name: /etc/tinc/{{network}}/tinc.conf
     - text:
       - ConnectTo = {{ host|replace(".", "_")|replace("-", "_") }}
+{% endif %}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}:
   file.managed:
     - user: root

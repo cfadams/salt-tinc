@@ -1,13 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 {%- if dhcp == True %}
 ip addr add {{ip}} dev {{network}}
 ip link set {{network}} up
 {% else %}
-dhclient {{network}} &> /dev/null &
-IP=$(ip addr show america | grep -i 'inet' | sed -n 's/.*inet \(.*\)\/.*/\1/p')
-while [ $IP = '' ]
-do
-	IP=$(ip addr show america | grep -i 'inet' | sed -n 's/.*inet \(.*\)\/.*/\1/p')
-	sleep 1
-done
+dhclient
 {%- endif %}
