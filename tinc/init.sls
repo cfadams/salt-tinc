@@ -100,7 +100,7 @@ tinc_service-{{ network }}:
     - mode: 700
     - contents:
       - "#!/bin/bash"
-      {%- if tinc['network'][network]['node'][grains['id']]['ip']['local'] == "dhcp" %}
+      {%- if tinc['network'][network]['node'][grains['id']]['ip']['local'] != "dhcp" %}
       - ip addr add {{tinc['network'][network]['node'][grains['id']]['ip']['local']}} dev $INTERFACE
       - ip link set $INTERFACE up
       {% else %}
