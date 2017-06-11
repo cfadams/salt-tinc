@@ -1,5 +1,5 @@
 #!/bin/sh
-{% if tinc['network'][network]['node'][grains['id']]['ip']['local'] != "dhcp" %}
+{% if dhcp == True %}
 ip addr add {{tinc['network'][network]['node'][grains['id']]['ip']['local']}} dev $INTERFACE
 ip link set $INTERFACE up
 {% else %}

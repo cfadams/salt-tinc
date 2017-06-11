@@ -99,6 +99,12 @@ tinc_service-{{ network }}:
     - user: root
     - group: root
     - mode: 700
+    - context:
+      {% if tinc['network'][network]['node'][grains['id']]['ip']['local'] != "dhcp" %}
+      dhcp: True
+      {% else %}
+      dhcp: False
+      {% endif %}
 /etc/tinc/{{network}}/tinc-down:
   file.managed:
     - user: root
