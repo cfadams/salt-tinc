@@ -128,7 +128,7 @@ tinc_service-{{ network }}:
     - contents:
 {% endif %}
 {% for script_line in script_contents %}
-      - {{ script_line }}
+      - {{ script_line | yaml_encode}}
 {% endfor %}
 {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
