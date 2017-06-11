@@ -113,8 +113,8 @@ tinc_service-{{ network }}:
     - mode: 700
     - contents:
       - "#!/bin/sh"
-      - kill $(pgrep -f "dhclient {{network}}")
-      - ifconfig $INTERFACE down
+      - "kill $(pgrep -f 'dhclient {{network}}')"
+      - "ifconfig $INTERFACE down"
 {% for script, script_contents in tinc['network'][network]['scripts'].iteritems() %}
 /etc/tinc/{{network}}/{{script}}-custom:
 {% if script == "tinc-up" or script == "tinc-down" %}
