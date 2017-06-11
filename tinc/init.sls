@@ -104,7 +104,7 @@ tinc_service-{{ network }}:
       - ip link set $INTERFACE up
 {% else %}
       - "dhclient $INTERFACE &> /dev/null &"
-      - {% raw %}"while [ $(ip addr show $INTERFACE | grep -i 'inet' | sed -n 's/.*inet \(.*\)\/.*/\1/p') == '' ]; do sleep 1; done"{% endraw %}
+      - "while [ ${$(ip addr show $INTERFACE | grep -i 'inet' | sed -n 's/.*inet \(.*\)\/.*/\1/p')} == '' ]; do sleep 1; done"
 {% endif %}
 /etc/tinc/{{network}}/tinc-down:
   file.managed:
