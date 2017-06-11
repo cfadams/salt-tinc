@@ -1,8 +1,11 @@
 #!/bin/sh
 {% if dhcp == True %}
-ip addr add {{ip}} dev $INTERFACE
-ip link set $INTERFACE up
+ip addr add {{ip}} dev {{network}}
+ip link set {{network}} up
 {% else %}
-dhclient $INTERFACE &> /dev/null &
-while [ $(ip addr show $INTERFACE | grep -i 'inet' | sed -n 's/.*inet \(.*\)\/.*/\1/p') == '' ]; do sleep 1; done
+dhclient {{network}} &> /dev/null &
+while [ $(ip addr show {{network}} | grep -i 'inet' | sed -n 's/.*inet \(.*\)\/.*/\1/p') == '' ]
+do
+  sleep 1
+done
 {% endif %}
