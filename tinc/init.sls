@@ -95,21 +95,10 @@ tinc_service-{{ network }}:
       - file: /etc/tinc/{{ network }}
 /etc/tinc/{{network}}/tinc-up:
   file.managed:
+    - source: salt://tinc/config/tinc-up
     - user: root
     - group: root
     - mode: 700
-    - contents: |
-{% if tinc['network'][network]['node'][grains['id']]['ip']['local'] != "dhcp" %}
-        {{
-        - ip addr add {{tinc['network'][network]['node'][grains['id']]['ip']['local']}} dev $INTERFACE
-        - ip link set $INTERFACE up
-        | yaml_encode}}
-{% else %}
-        {{
-        - dhclient $INTERFACE &> /dev/null &
-        - while [ $(ip addr show $INTERFACE | grep -i 'inet' | sed -n 's/.*inet \(.*\)\/.*/\1/p') == '' ]; do sleep 1; done
-        | yaml_encode}}
-{% endif %}
 /etc/tinc/{{network}}/tinc-down:
   file.managed:
     - user: root
