@@ -45,7 +45,6 @@ tinc_service-{{ network }}:
     - enable: True
     - watch:
       - file: /etc/tinc/{{ network }}/*
-      - file: /etc/tinc/{{ network }}/hosts/*
 {% endfor %}
 {% endif %}
 
@@ -146,6 +145,8 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 644
     - template: jinja
+    - watch_in:
+      - service: tinc_service
     - contents:
       - Address = {{tinc['network'][network]['node'][host]['ip']['public']}}
 {% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
@@ -155,6 +156,8 @@ tinc_service-{{ network }}:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
+    - watch_in:
+      - service: tinc_service
 {% endfor %}
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host]['master']==True) %}
@@ -169,6 +172,8 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 644
     - template: jinja
+    - watch_in:
+      - service: tinc_service
     - contents:
       - Address = {{tinc['network'][network]['node'][host]['ip']['public']}}
 {% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
@@ -178,6 +183,8 @@ tinc_service-{{ network }}:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
+    - watch_in:
+      - service: tinc_service
 {% endfor %}
 {% endif %}
 {% elif tinc['network'][network]['type']=="mesh" %}
@@ -193,6 +200,8 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 644
     - template: jinja
+    - watch_in:
+      - service: tinc_service
     - contents:
       - Address = {{tinc['network'][network]['node'][host]['ip']['public']}}
 {% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
@@ -202,6 +211,8 @@ tinc_service-{{ network }}:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
+    - watch_in:
+      - service: tinc_service
 {% endfor %}
 {% endif %}
 {% endfor %}
