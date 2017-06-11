@@ -103,7 +103,8 @@ tinc_service-{{ network }}:
       - ip addr add {{tinc['network'][network]['node'][grains['id']]['ip']['local']}} dev $INTERFACE
       - ip link set $INTERFACE up
 {% else %}
-      - "dhclient $INTERFACE &> /dev/null"
+      - "dhclient $INTERFACE &> /dev/null &"
+      - "while [ $(ip addr show $INTERFACE | grep -i 'inet' | sed -n 's/.*inet \(.*\)\/.*/\1/p') == '' ]; do sleep 1; done"
 {% endif %}
 /etc/tinc/{{network}}/tinc-down:
   file.managed:
