@@ -43,8 +43,10 @@
 {% endif %}
 {% set network_conf_local=tinc_pillar['network'][network]['conf']['local'] %}
 {% set network_conf_host=tinc_pillar['network'][network]['conf']['host'] %}
+{% set network_scripts=tinc_pillar['network'][network]['script'] %}
 {% do tinc_pillar['network'][network]['node'][host]['conf'].update({'local': salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:local',default=network_conf_local,merge=True)}) %}
 {% do tinc_pillar['network'][network]['node'][host]['conf'].update({'host': salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=network_conf_host,merge=True)}) %}
+{% do tinc_pillar['network'][network]['node'][host]['conf'].update({'host': salt['pillar.get']('tinc:network:'~network~':node:'~host~':script',default=network_scripts,merge=True)}) %}
 {% if tinc_externalip[host] is defined and tinc_pillar['network'][network]['node'][host]['ip']['public'] is not defined %}
 {% do tinc_pillar['network'][network]['node'][host]['ip'].update({'public': tinc_externalip[host]}) %}
 {% endif %}

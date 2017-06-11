@@ -93,44 +93,15 @@ tinc_service-{{ network }}:
     - mode: 400
     - require:
       - file: /etc/tinc/{{ network }}
-/etc/tinc/{{network}}/tinc-up:
+{% for script, script_contents in tinc['network'][network][grains['id']]['script']['local'].iteritems() %}
+/etc/tinc/{{network}}/{{script}}:
   file.managed:
+    - source: salt://tinc/script_template
     - user: root
     - group: root
     - mode: 700
-    - contents:
-      - "#!/bin/bash"
-      {%- if tinc['network'][network]['node'][grains['id']]['ip']['local'] != "dhcp" %}
-      - ip addr add {{tinc['network'][network]['node'][grains['id']]['ip']['local']}} dev $INTERFACE
-      - ip link set $INTERFACE up
-      {% else %}
-      - dhclient $INTERFACE
-      {%- endif %}
-/etc/tinc/{{network}}/tinc-down:
-  file.managed:
-    - user: root
-    - group: root
-    - mode: 700
-    - contents:
-      - "dhclient -r $INTERFACE"
-      - "ifconfig $INTERFACE down"
-{% for script, script_contents in tinc['network'][network]['scripts'].iteritems() %}
-/etc/tinc/{{network}}/{{script}}-custom:
-{% if script == "tinc-up" or script == "tinc-down" %}
-  file.append:
-    - name: /etc/tinc/{{network}}/{{script}}
-    - text:
-{% else %}
-  file.managed:
-    - name: /etc/tinc/{{network}}/{{script}}
-    - user: root
-    - group: root
-    - mode: 700
-    - contents:
-{% endif %}
-{% for script_line in script_contents %}
-      - {{ script_line | yaml_encode}}
-{% endfor %}
+    - context:
+      script: tinc['network'][network][grains['id']]['script']['local'][script]
 {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']]['master']==True %}
@@ -157,6 +128,16 @@ tinc_service-{{ network }}:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
+{% for script, script_contents in tinc['network'][network][host]['script']['host'].iteritems() %}
+/etc/tinc/{{network}}/hosts/{{script}}:
+  file.managed:
+    - source: salt://tinc/script_template
+    - user: root
+    - group: root
+    - mode: 700
+    - context:
+      script: tinc['network'][network][host]['script']['host'][script]
+{% endfor %}
 {% endfor %}
 {% else %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host]['master']==True) %}
@@ -180,6 +161,16 @@ tinc_service-{{ network }}:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
+{% for script, script_contents in tinc['network'][network][host]['script']['host'].iteritems() %}
+/etc/tinc/{{network}}/hosts/{{script}}:
+  file.managed:
+    - source: salt://tinc/script_template
+    - user: root
+    - group: root
+    - mode: 700
+    - context:
+      script: tinc['network'][network][host]['script']['host'][script]
+{% endfor %}
 {% endfor %}
 {% endif %}
 {% elif tinc['network'][network]['type']=="mesh" %}
@@ -206,6 +197,16 @@ tinc_service-{{ network }}:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
+{% for script, script_contents in tinc['network'][network][host]['script']['host'].iteritems() %}
+/etc/tinc/{{network}}/hosts/{{script}}:
+  file.managed:
+    - source: salt://tinc/script_template
+    - user: root
+    - group: root
+    - mode: 700
+    - context:
+      script: tinc['network'][network][host]['script']['host'][script]
+{% endfor %}
 {% endfor %}
 {% endif %}
 {% endfor %}

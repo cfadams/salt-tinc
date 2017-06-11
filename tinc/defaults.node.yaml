@@ -3,5 +3,7 @@ ip:
 conf:
   local: {}
   host: {}
-scripts: {}
+script:
+  local: {}
+  host: {}
 master: False

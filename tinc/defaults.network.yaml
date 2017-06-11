@@ -2,5 +2,7 @@ type: central
 conf:
   local: {}
   host: {}
-scripts: {}
+script:
+  local: {}
+  host: {}
 node: {}
