@@ -1,6 +1,6 @@
 #!/bin/sh
 {% if dhcp == True %}
-ip addr add {{tinc['network'][network]['node'][grains['id']]['ip']['local']}} dev $INTERFACE
+ip addr add {{ip}} dev $INTERFACE
 ip link set $INTERFACE up
 {% else %}
 dhclient $INTERFACE &> /dev/null &

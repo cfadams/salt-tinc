@@ -104,6 +104,7 @@ tinc_service-{{ network }}:
       dhcp: True
       {% else %}
       dhcp: False
+      ip: {{tinc['network'][network]['node'][grains['id']]['ip']['local']}}
       {% endif %}
 /etc/tinc/{{network}}/tinc-down:
   file.managed:
