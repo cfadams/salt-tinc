@@ -1,7 +1,0 @@
-#!/bin/bash
-{%- if dhcp == True %}
-ip addr add {{ip}} dev {{network}}
-ip link set {{network}} up
-{% else %}
-dhclient
-{%- endif %}
