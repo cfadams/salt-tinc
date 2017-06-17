@@ -8,12 +8,12 @@ Ubuntu:
       - python-augeas
       - tinc
       - dnsmasq
+  init-system: upstart
   "14.04":
     repo:
       tinc:
         url: "http://download.opensuse.org/repositories/home:/alinuxninja:/tinc/xUbuntu_14.04/ /"
         key: "http://download.opensuse.org/repositories/home:alinuxninja:tinc/xUbuntu_14.04/Release.key"
-    init-system: upstart
   "16.04":
     repo:
       tinc:
@@ -30,6 +30,7 @@ Debian:
       - python-augeas
       - tinc
       - dnsmasq
+  init-system: upstart
   "7":
     repo:
       tinc:
