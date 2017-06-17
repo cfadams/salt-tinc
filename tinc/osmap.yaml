@@ -42,7 +42,7 @@ Debian:
       tinc:
         url: "http://download.opensuse.org/repositories/home:/alinuxninja:/tinc/Debian_8.0/ /"
         key: "http://download.opensuse.org/repositories/home:alinuxninja:tinc/Debian_8.0/Release.key"
-    init-system: systemd
+    init-system: sysv
 CentOS:
   common:
     packages:
