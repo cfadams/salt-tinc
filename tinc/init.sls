@@ -111,7 +111,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - contents:
-      - Address = {{tinc['network'][network]['node'][grains['id']]['ip']['public']}}
+      - Address = {{tinc['network'][network]['node'][grains['id']]['ip']}}
 {% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
@@ -135,7 +135,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - contents:
-      - Address = {{tinc['network'][network]['node'][host]['ip']['public']}}
+      - Address = {{tinc['network'][network]['node'][host]['ip']}}
 {% for option, option_value in tinc['network'][network]['node'][host]['conf']['host'].iteritems() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
@@ -168,7 +168,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - contents:
-      - Address = {{tinc['network'][network]['node'][host]['ip']['public']}}
+      - Address = {{tinc['network'][network]['node'][host]['ip']}}
 {% for option, option_value in tinc['network'][network]['node'][host]['conf']['host'].iteritems() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
@@ -204,7 +204,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - template: jinja
     - contents:
-      - Address = {{tinc['network'][network]['node'][host]['ip']['public']}}
+      - Address = {{tinc['network'][network]['node'][host]['ip']}}
 {% for option, option_value in tinc['network'][network]['node'][host]['conf']['host'].iteritems() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
