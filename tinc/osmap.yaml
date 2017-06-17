@@ -21,6 +21,15 @@ Ubuntu:
         key: "http://download.opensuse.org/repositories/home:alinuxninja:tinc/xUbuntu_16.04/Release.key"
     init-system: sysv
 Debian:
+  common:
+    packages:
+      - libpython2.7
+      - augeas-tools
+      - augeas-lenses
+      - libaugeas0
+      - python-augeas
+      - tinc
+      - dnsmasq
   "7":
     repo:
       tinc:
