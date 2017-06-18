@@ -1,5 +1,4 @@
-ip:
-  local: dhcp
+ip: ""
 conf:
   local: {}
   host: {}
