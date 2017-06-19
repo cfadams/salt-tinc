@@ -93,7 +93,7 @@ tinc_service-{{ network }}:
     - mode: 400
     - require:
       - file: /etc/tinc/{{ network }}
-{% for script, script_contents in tinc['network'][network]['node'][grains['id']]['script']['local'].iteritems() %}
+{% for script, script_contents in tinc['network'][network]['node'][grains['id']]['scripts']['local'].iteritems() %}
 /etc/tinc/{{network}}/{{script}}:
   file.managed:
     - source: salt://tinc/script_template
@@ -101,7 +101,7 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 700
     - context:
-      script: tinc['network'][network]['node'][grains['id']]['script']['local'][script]
+      script: tinc['network'][network]['node'][grains['id']]['scripts']['local'][script]
 {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']]['master']==True %}
