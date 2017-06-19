@@ -102,7 +102,7 @@ tinc_service-{{ network }}:
     - mode: 700
     - template: jinja
     - context:
-      script: {{ tinc['network'][network]['node'][host]['scripts']['host'][script] }}
+      script: {{ tinc['network'][network]['node'][grains['id']]['scripts']['host'][script] }}
 {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']]['master']==True %}
