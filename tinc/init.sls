@@ -104,21 +104,6 @@ tinc_service-{{ network }}:
       script: tinc['network'][network]['node'][grains['id']]['script']['local'][script]
 {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
-/etc/tinc/{{network}}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}:
-  file.managed:
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - contents:
-      - Address = {{tinc['network'][network]['node'][grains['id']]['ip']}}
-{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
-      - {{ option }} = {{ option_value }}
-{% endfor %}
-/etc/tinc/{{network}}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}_appendkey:
-  file.append:
-    - name: /etc/tinc/{{network}}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}
-    - source: salt://{{tinc['keypath']}}/{{grains['id']}}/rsa_key.pub
 {% if tinc['network'][network]['node'][grains['id']]['master']==True %}
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) %}
 {% if  host != grains['id'] %}
@@ -155,6 +140,21 @@ tinc_service-{{ network }}:
 {% endfor %}
 {% endfor %}
 {% else %}
+/etc/tinc/{{network}}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - contents:
+      - Address = {{tinc['network'][network]['node'][grains['id']]['ip']}}
+{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
+      - {{ option }} = {{ option_value }}
+{% endfor %}
+/etc/tinc/{{network}}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}_appendkey:
+  file.append:
+    - name: /etc/tinc/{{network}}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}
+    - source: salt://{{tinc['keypath']}}/{{grains['id']}}/rsa_key.pub
 {% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host]['master']==True) %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
