@@ -100,8 +100,9 @@ tinc_service-{{ network }}:
     - user: root
     - group: root
     - mode: 700
+    - template: jinja
     - context:
-      script: tinc['network'][network]['node'][grains['id']]['scripts']['local'][script]
+      script: {{ tinc['network'][network]['node'][host]['scripts']['host'][script] }}
 {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']]['master']==True %}
@@ -135,8 +136,9 @@ tinc_service-{{ network }}:
     - user: root
     - group: root
     - mode: 700
+    - template: jinja
     - context:
-      script: tinc['network'][network]['node'][host]['scripts']['host'][script]
+      script: {{ tinc['network'][network]['node'][host]['scripts']['host'][script] }}
 {% endfor %}
 {% endfor %}
 {% else %}
@@ -183,8 +185,9 @@ tinc_service-{{ network }}:
     - user: root
     - group: root
     - mode: 700
+    - template: jinja
     - context:
-      script: tinc['network'][network]['node'][host]['scripts']['host'][script]
+      script: {{ tinc['network'][network]['node'][host]['scripts']['host'][script] }}
 {% endfor %}
 {% endfor %}
 {% endif %}
@@ -221,7 +224,7 @@ tinc_service-{{ network }}:
     - mode: 700
     - template: jinja
     - context:
-      script: tinc['network'][network]['node'][host]['scripts']['host'][script]
+      script: {{ tinc['network'][network]['node'][host]['scripts']['host'][script] }}
 {% endfor %}
 {% endfor %}
 {% endif %}
