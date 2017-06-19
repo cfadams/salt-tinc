@@ -219,6 +219,7 @@ tinc_service-{{ network }}:
     - user: root
     - group: root
     - mode: 700
+    - template: jinja
     - context:
       script: tinc['network'][network]['node'][host]['scripts']['host'][script]
 {% endfor %}
