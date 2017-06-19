@@ -1,1 +1,4 @@
 #!/bin/bash
+{%- for script_line in script -%}
+{{script_line}}
+{% endfor -%}
