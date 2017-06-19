@@ -2,7 +2,7 @@ ip: ""
 conf:
   local: {}
   host: {}
-script:
+scripts:
   local: {}
   host: {}
 master: False
