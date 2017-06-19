@@ -176,7 +176,7 @@ tinc_service-{{ network }}:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
-{% for script, script_contents in tinc['network'][network]['node'][host]['script']['host'].iteritems() %}
+{% for script, script_contents in tinc['network'][network]['node'][host]['scripts']['host'].iteritems() %}
 /etc/tinc/{{network}}/hosts/{{script}}:
   file.managed:
     - source: salt://tinc/script_template
@@ -184,7 +184,7 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 700
     - context:
-      script: tinc['network'][network]['node'][host]['script']['host'][script]
+      script: tinc['network'][network]['node'][host]['scripts']['host'][script]
 {% endfor %}
 {% endfor %}
 {% endif %}
@@ -212,7 +212,7 @@ tinc_service-{{ network }}:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
-{% for script, script_contents in tinc['network'][network]['node'][host]['script']['host'].iteritems() %}
+{% for script, script_contents in tinc['network'][network]['node'][host]['scripts']['host'].iteritems() %}
 /etc/tinc/{{network}}/hosts/{{script}}:
   file.managed:
     - source: salt://tinc/script_template
@@ -220,7 +220,7 @@ tinc_service-{{ network }}:
     - group: root
     - mode: 700
     - context:
-      script: tinc['network'][network]['node'][host]['script']['host'][script]
+      script: tinc['network'][network]['node'][host]['scripts']['host'][script]
 {% endfor %}
 {% endfor %}
 {% endif %}
