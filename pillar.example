@@ -10,6 +10,8 @@ tinc:
           AddressFamily: "any"
           Mode: "switch"
           Port: 1160
+          Cipher: aes-128-cbc
+          Compression: 0
         host:
           # See options from https://www.tinc-vpn.org/documentation/Host-configuration-variables.html
           # Predefined Keys: Address
@@ -20,13 +22,14 @@ tinc:
           Port: 1160
           Subnet: 10.5.0.0/16
         scripts:
-          tinc-up:
-            - dhclient {interface}
-          tinc-down: []
+          local:
+              tinc-up:
+                - "dhclient $INTERFACE &"
+              tinc-down: []
+                - "dhclient -r $INTERFACE"
       node:
         Vivian.remote.alinuxninjasrv:
-          ip:
-            public: 192.168.2.1
+          ip: 192.168.2.1
             local: 10.5.1.10/255.255.255.0
         cr02.startledphoenixsrv:
           ip:
@@ -38,3 +41,10 @@ tinc:
             host:
               Port: 5200
           master: True
+          scripts:
+            local:
+              tinc-up:
+                - ip addr add 10.4.0.1/255.255.0.0 dev $INTERFACE
+                - ip link set $INTERFACE up
+              tinc-down:
+                - ip link set $INTERFACE down
