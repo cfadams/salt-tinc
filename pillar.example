@@ -1,7 +1,6 @@
 tinc:
   network:
     mynet:
-      type: mesh # "mesh" or "central"
       conf:
         local:
           # See options from https://www.tinc-vpn.org/documentation/tinc.conf.5
@@ -40,7 +39,6 @@ tinc:
               Port: 5200
             host:
               Port: 5200
-          master: True
           scripts:
             local:
               tinc-up:
