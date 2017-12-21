@@ -30,17 +30,13 @@ tinc:
       node:
         Vivian.remote.alinuxninjasrv:
           ip: 192.168.2.1
-            local: 10.5.1.10/255.255.255.0
         cr02.startledphoenixsrv:
-          ip:
-            public: 192.168.2.1
-            local: 10.5.1.10/255.255.255.0
+          ip: 192.168.2.1
           conf:
             local:
               Port: 5200
             host:
               Port: 5200
-          master: True
           scripts:
             local:
               tinc-up:
