@@ -1,5 +1,5 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
-{% from "tinc/map.jinja" import tinc_hosts as mine_data %}
+{% from "tinc/map.jinja" import roles as mine_data %}
 
 {# tinc installation #}
 tinc_install:
