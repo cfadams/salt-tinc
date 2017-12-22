@@ -20,7 +20,7 @@ tinc_service_disableall:
     - group: root
     - mode: 644
     - template: jinja
-    - contents: {{ mine_data[gerains['id']] }}
+    - contents: {{ mine_data[grains['id']] }}
 tinc_service:
   service.running:
     - name: tinc
@@ -28,7 +28,7 @@ tinc_service:
     - require:
       - file: /etc/tinc/*
     - watch:
-{% for network in mine_data[grains['id']] %}
+{% for network in mine_data[gerains['id']] %}
       - file: /etc/tinc/{{ network }}/*
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endfor %}
