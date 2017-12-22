@@ -20,7 +20,7 @@ tinc_service_disableall:
     - group: root
     - mode: 644
     - template: jinja
-    - contents: {{ mine_data[grains['id']] }}
+    - contents: {{ mine_data[gerains['id']] }}
 tinc_service:
   service.running:
     - name: tinc
