@@ -37,7 +37,7 @@
 
 {# Merge Custom Config #}
 {% for host, host_roles in roles.iteritems() %}
-{% for network in host_roles if network in roles[grains['id']]%}
+{% for network in host_roles if tinc_pillar['network'][network] is defined %}
 {% if tinc_pillar['network'][network]['node'][host] is not defined %}
 {% do tinc_pillar['network'][network]['node'].update({host: node_defaults}) %}
 {% endif %}
