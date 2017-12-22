@@ -4,7 +4,7 @@
 {% import_yaml "tinc/defaults.node.yaml" as node_defaults %}
 
 {# Get Mine Data #}
-{% set roles = salt['mine.get']('*', 'tinc', expr_form = 'glob') %}
+{% set roles = salt['mine.get']('*', 'tinc_networks', expr_form = 'glob') %}
 {% set tinc_externalip = salt['mine.get']('*', 'tinc_externalip', expr_form = 'glob') %}
 
 {# Map OS to OSName #}

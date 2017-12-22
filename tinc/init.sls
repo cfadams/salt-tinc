@@ -28,7 +28,7 @@ tinc_service:
     - require:
       - file: /etc/tinc/*
     - watch:
-{% for network in mine_data[gerains['id']] %}
+{% for network in mine_data[grains['id']] %}
       - file: /etc/tinc/{{ network }}/*
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endfor %}
