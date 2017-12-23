@@ -37,7 +37,7 @@
 
 {# Pop unused networks #}
 {% set networks = {} %}
-{% for network, network_settings in tinc_pillar['network'] if (network in roles[grains['id']]) %}
+{% for network, network_settings in tinc_pillar['network'].iteritems() if (network in roles[grains['id']]) %}
 {% do networks.update({network: network_settings}) %}
 {% endfor %}
 
