@@ -43,7 +43,7 @@
 
 
 {# Merge Custom Config #}
-{% for network, network_settings in networks.iteritems() %}
+{% for network, network_settings in tinc_pillar['network'].iteritems() %}
 {% if tinc_pillar['network'][network]['node'][host] is not defined %}
 {% do tinc_pillar['network'][network]['node'].update({host: node_defaults}) %}
 {% endif %}
