@@ -36,8 +36,7 @@
 {% endfor %}
 
 {# Pop unused networks #}
-{% set networks_iterator = tinc_pillar['network'] %}
-{% for network in networks_iterator.keys() if (network not in roles[grains['id']]) %}
+{% for network in tinc_pillar['network'].keys() if (network not in roles[grains['id']]) %}
 {% do tinc_pillar['network'].pop(network) %}
 {% endfor %}
 
