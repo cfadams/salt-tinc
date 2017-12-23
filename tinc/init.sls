@@ -1,5 +1,4 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
-{% from "tinc/map.jinja" import networks as networks %}
 {% from "tinc/map.jinja" import roles as hosts %}
 
 {# tinc installation #}
@@ -21,7 +20,7 @@ tinc_service_disableall:
     - group: root
     - mode: 644
     - template: jinja
-    - contents: {{ networks.keys() }}
+    - contents: {{ tinc['network'].keys() }}
 tinc_service:
   service.running:
     - name: tinc
@@ -29,13 +28,13 @@ tinc_service:
     - require:
       - file: /etc/tinc/*
     - watch:
-{% for network in networks.keys() %}
+{% for network in tinc['network'].keys() %}
       - file: /etc/tinc/{{ network }}/*
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endfor %}
 {% elif tinc['init-system'] == 'systemd' %}
 {# systemd init #}
-{% for network in networks.keys() %}
+{% for network in tinc['network'].keys() %}
 tinc_service_disableall: # systemctl stop tinc*
   service.dead:
     - name: 'tinc*'
@@ -51,7 +50,7 @@ tinc_service-{{ network }}:
 {% endif %}
 
 {# Tinc Network Hosts #}
-{% for network in networks.keys() %}
+{% for network in tinc['network'].keys() %}
 /etc/tinc/{{network}}:
   file.directory:
     - user: root
