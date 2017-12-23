@@ -35,11 +35,6 @@
 {% endif %}
 {% endfor %}
 
-{# Pop unused networks #}
-{% for network in tinc_pillar['network'].keys() if (network not in roles[grains['id']]) %}
-{% do tinc_pillar['network'].pop(network) %}
-{% endfor %}
-
 
 {# Merge Custom Config #}
 {% for network, network_settings in tinc_pillar['network'].iteritems() %}
