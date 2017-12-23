@@ -59,7 +59,6 @@
 {% do tinc_pillar['network'][network]['node'][host].update({'ip': tinc_externalip[host]}) %}
 {% endif %}
 {% endfor %}
-{% endfor %}
 
 {# Create import pillar #}
 {% set tinc = tinc_pillar %}
