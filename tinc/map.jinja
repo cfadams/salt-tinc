@@ -35,9 +35,15 @@
 {% endif %}
 {% endfor %}
 
+{# Pop unused networks #}
+{% set networks = {} %}
+{% for network, network_settings in tinc_pillar['network'] if (network in roles[grains['id']]) %}
+{% do networks.update({network: network_settings}) %}
+{% endfor %}
+
+
 {# Merge Custom Config #}
-{% for host, host_roles in roles.iteritems() %}
-{% for network in host_roles if tinc_pillar['network'][network] is defined %}
+{% for network, network_settings in networks.iteritems() %}
 {% if tinc_pillar['network'][network]['node'][host] is not defined %}
 {% do tinc_pillar['network'][network]['node'].update({host: node_defaults}) %}
 {% endif %}

@@ -1,5 +1,6 @@
 {% from "tinc/map.jinja" import tinc as tinc %}
-{% from "tinc/map.jinja" import roles as mine_data %}
+{% from "tinc/map.jinja" import networks as networks %}
+{% from "tinc/map.jinja" import roles as hosts %}
 
 {# tinc installation #}
 tinc_install:
@@ -20,7 +21,7 @@ tinc_service_disableall:
     - group: root
     - mode: 644
     - template: jinja
-    - contents: {{ mine_data[grains['id']] }}
+    - contents: {{ networks.keys() }}
 tinc_service:
   service.running:
     - name: tinc
@@ -28,13 +29,13 @@ tinc_service:
     - require:
       - file: /etc/tinc/*
     - watch:
-{% for network in mine_data[grains['id']] %}
+{% for network in networks.keys() %}
       - file: /etc/tinc/{{ network }}/*
       - file: /etc/tinc/{{ network }}/hosts/*
 {% endfor %}
 {% elif tinc['init-system'] == 'systemd' %}
 {# systemd init #}
-{% for network in mine_data[grains['id']] %}
+{% for network in networks.keys() %}
 tinc_service_disableall: # systemctl stop tinc*
   service.dead:
     - name: 'tinc*'
@@ -50,7 +51,7 @@ tinc_service-{{ network }}:
 {% endif %}
 
 {# Tinc Network Hosts #}
-{% for network in mine_data[grains['id']] %}
+{% for network in networks.keys() %}
 /etc/tinc/{{network}}:
   file.directory:
     - user: root
@@ -107,7 +108,7 @@ tinc_service-{{ network }}:
 {% endfor %}
 {% if tinc['network'][network]['type']=="central" %}
 {% if tinc['network'][network]['node'][grains['id']]['master']==True %}
-{% for host, host_settings in mine_data.iteritems() if (network in host_settings) %}
+{% for host, host_settings in roles.iteritems() if (network in host_settings) %}
 {% if  host != grains['id'] %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
@@ -158,7 +159,7 @@ tinc_service-{{ network }}:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{grains['id']}}/rsa_key.pub
-{% for host, host_settings in mine_data.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host]['master']==True) %}
+{% for host, host_settings in hosts.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host]['master']==True) %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
     - name: /etc/tinc/{{network}}/tinc.conf
@@ -193,7 +194,7 @@ tinc_service-{{ network }}:
 {% endfor %}
 {% endif %}
 {% elif tinc['network'][network]['type']=="mesh" %}
-{% for host, host_settings in mine_data.iteritems() if (network in host_settings) %}
+{% for host, host_settings in hosts.iteritems() if (network in host_settings) %}
 {% if host != grains['id'] %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
