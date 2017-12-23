@@ -37,6 +37,7 @@
 
 
 {# Merge Custom Config #}
+{% for host in roles.keys() %}
 {% for network, network_settings in tinc_pillar['network'].iteritems() %}
 {% if tinc_pillar['network'][network]['node'][host] is not defined %}
 {% do tinc_pillar['network'][network]['node'].update({host: node_defaults}) %}
@@ -52,6 +53,7 @@
 {% if tinc_externalip[host] is defined and tinc_pillar['network'][network]['node'][host]['ip'] == "" %}
 {% do tinc_pillar['network'][network]['node'][host].update({'ip': tinc_externalip[host]}) %}
 {% endif %}
+{% endfor %}
 {% endfor %}
 
 {# Create import pillar #}
