@@ -4,7 +4,6 @@
 {% import_yaml "tinc/defaults.node.yaml" as node_defaults %}
 
 {# Get Mine Data #}
-{% set roles = salt['mine.get']('*', 'tinc_networks', expr_form = 'glob') %}
 {% set tinc_externalip = salt['mine.get']('*', 'tinc_externalip', expr_form = 'glob') %}
 
 {# Map OS to OSName #}
@@ -31,35 +30,19 @@
 {% for node, node_setting in network_settings['node'].iteritems() %}
 {% set merged_node = salt['pillar.get']('tinc:network:'~network~':node:'~node,default=node_defaults,merge=True) %}
 {% do tinc_pillar['network'][network]['node'][node].update(merged_node) %}
-{% endfor %}
-{% endif %}
-{% endfor %}
-
-{# Pop unused networks #}
-{% set networks_iterator = tinc_pillar['network'] %}
-{% for network in tinc_pillar['network'].keys() if (network not in roles[grains['id']]) %}
-{% do tinc_pillar['network'].pop(network) %}
-{% endfor %}
-
-
-{# Merge Custom Config #}
-{% for host in roles.keys() %}
-{% for network, network_settings in tinc_pillar['network'].iteritems() %}
-{% if tinc_pillar['network'][network]['node'][host] is not defined %}
-{% do tinc_pillar['network'][network]['node'].update({host: node_defaults}) %}
-{% endif %}
 {% set network_conf_local=tinc_pillar['network'][network]['conf']['local'] %}
 {% set network_conf_host=tinc_pillar['network'][network]['conf']['host'] %}
 {% set network_scripts_local=tinc_pillar['network'][network]['scripts']['local'] %}
 {% set network_scripts_host=tinc_pillar['network'][network]['scripts']['host'] %}
-{% do tinc_pillar['network'][network]['node'][host]['conf'].update({'local': salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:local',default=network_conf_local,merge=True)}) %}
-{% do tinc_pillar['network'][network]['node'][host]['conf'].update({'host': salt['pillar.get']('tinc:network:'~network~':node:'~host~':conf:host',default=network_conf_host,merge=True)}) %}
-{% do tinc_pillar['network'][network]['node'][host]['scripts'].update({'local': salt['pillar.get']('tinc:network:'~network~':node:'~host~':scripts:local',default=network_scripts_local,merge=True)}) %}
-{% do tinc_pillar['network'][network]['node'][host]['scripts'].update({'host': salt['pillar.get']('tinc:network:'~network~':node:'~host~':scripts:host',default=network_scripts_host,merge=True)}) %}
-{% if tinc_externalip[host] is defined and tinc_pillar['network'][network]['node'][host]['ip'] == "" %}
-{% do tinc_pillar['network'][network]['node'][host].update({'ip': tinc_externalip[host]}) %}
+{% do tinc_pillar['network'][network]['node'][node]['conf'].update({'local': salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:local',default=network_conf_local,merge=True)}) %}
+{% do tinc_pillar['network'][network]['node'][node]['conf'].update({'host': salt['pillar.get']('tinc:network:'~network~':node:'~node~':conf:host',default=network_conf_host,merge=True)}) %}
+{% do tinc_pillar['network'][network]['node'][node]['scripts'].update({'local': salt['pillar.get']('tinc:network:'~network~':node:'~node~':scripts:local',default=network_scripts_local,merge=True)}) %}
+{% do tinc_pillar['network'][network]['node'][host]['scripts'].update({'host': salt['pillar.get']('tinc:network:'~network~':node:'~node~':scripts:host',default=network_scripts_host,merge=True)}) %}
+{% if tinc_externalip[host] is defined and tinc_pillar['network'][network]['node'][node]['ip'] == "" %}
+{% do tinc_pillar['network'][network]['node'][node].update({'ip': tinc_externalip[host]}) %}
 {% endif %}
 {% endfor %}
+{% endif %}
 {% endfor %}
 
 {# Create import pillar #}
