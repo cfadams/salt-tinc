@@ -72,7 +72,7 @@ tinc_service-{{ network }}:
     - mode: 644
     - contents:
       - Name = {{ grains['id']|replace(".", "_")|replace("-", "_") }}
-{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['local'].iteritems() %}
+{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['local'].items() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
     - require:
@@ -93,7 +93,7 @@ tinc_service-{{ network }}:
     - mode: 400
     - require:
       - file: /etc/tinc/{{ network }}
-{% for script, script_contents in tinc['network'][network]['node'][grains['id']]['scripts']['local'].iteritems() %}
+{% for script, script_contents in tinc['network'][network]['node'][grains['id']]['scripts']['local'].items() %}
 /etc/tinc/{{network}}/{{script}}:
   file.managed:
     - source: salt://tinc/script_template
@@ -105,7 +105,7 @@ tinc_service-{{ network }}:
       script: {{ tinc['network'][network]['node'][grains['id']]['scripts']['local'] }}
       script_name: {{script}}
 {% endfor %}
-{% for host, host_settings in tinc['network'][network]['node'].iteritems() %}
+{% for host, host_settings in tinc['network'][network]['node'].items() %}
 {% if  host != grains['id'] %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
@@ -121,14 +121,14 @@ tinc_service-{{ network }}:
     - template: jinja
     - contents:
       - Address = {{tinc['network'][network]['node'][host]['ip']}}
-{% for option, option_value in tinc['network'][network]['node'][host]['conf']['host'].iteritems() %}
+{% for option, option_value in tinc['network'][network]['node'][host]['conf']['host'].items() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_appendkey:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
-{% for script, script_contents in tinc['network'][network]['node'][host]['scripts']['host'].iteritems() %}
+{% for script, script_contents in tinc['network'][network]['node'][host]['scripts']['host'].items() %}
 /etc/tinc/{{network}}/hosts/{{script}}:
   file.managed:
     - source: salt://tinc/script_template
@@ -149,14 +149,14 @@ tinc_service-{{ network }}:
     - template: jinja
     - contents:
       - Address = {{tinc['network'][network]['node'][grains['id']]['ip']}}
-{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].iteritems() %}
+{% for option, option_value in tinc['network'][network]['node'][grains['id']]['conf']['host'].items() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
 /etc/tinc/{{network}}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}_appendkey:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ grains['id']|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{grains['id']}}/rsa_key.pub
-{% for host, host_settings in hosts.iteritems() if (network in host_settings) and (tinc['network'][network]['node'][host]['master']==True) %}
+{% for host, host_settings in hosts.items() if (network in host_settings) and (tinc['network'][network]['node'][host]['master']==True) %}
 /etc/tinc/{{network}}/tinc.conf_addhost-{{ host|replace(".", "_")|replace("-", "_") }}:
   file.append:
     - name: /etc/tinc/{{network}}/tinc.conf
@@ -170,14 +170,14 @@ tinc_service-{{ network }}:
     - template: jinja
     - contents:
       - Address = {{tinc['network'][network]['node'][host]['ip']}}
-{% for option, option_value in tinc['network'][network]['node'][host]['conf']['host'].iteritems() %}
+{% for option, option_value in tinc['network'][network]['node'][host]['conf']['host'].items() %}
       - {{ option }} = {{ option_value }}
 {% endfor %}
 /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}_appendkey:
   file.append:
     - name: /etc/tinc/{{network}}/hosts/{{ host|replace(".", "_")|replace("-", "_") }}
     - source: salt://{{tinc['keypath']}}/{{host}}/rsa_key.pub
-{% for script, script_contents in tinc['network'][network]['node'][host]['scripts']['host'].iteritems() %}
+{% for script, script_contents in tinc['network'][network]['node'][host]['scripts']['host'].items() %}
 /etc/tinc/{{network}}/hosts/{{script}}:
   file.managed:
     - source: salt://tinc/script_template
