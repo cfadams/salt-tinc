@@ -4,7 +4,7 @@
 {% import_yaml "tinc/defaults.node.yaml" as node_defaults %}
 
 {# Get Mine Data #}
-{% set tinc_externalip = salt['mine.get']('*', 'tinc_externalip', expr_form = 'glob') %}
+{% set tinc_externalip = salt['mine.get']('*', 'tinc_externalip', tgt_type = 'glob') %}
 
 {# Map OS to OSName #}
 {% set os_distro = salt['grains.filter_by'](osmap,grain='os',default='Debian') %}
